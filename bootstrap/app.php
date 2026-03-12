@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Đăng ký alias cho middleware
         $middleware->alias([
-            'can' => CheckRole::class, // 'can' là tên alias
+            'role' => CheckRole::class, 
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

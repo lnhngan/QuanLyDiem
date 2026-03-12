@@ -20,47 +20,73 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- Custom CSS -->
     <style>
+        
         body {
             font-size: .875rem;
             background-color: #f4f6f9;
         }
         
+        /* 1. Sửa lại Sidebar: Cho chiếm toàn bộ cột trái */
         .sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 100;
-            padding: 48px 0 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 250px; 
+            z-index: 1040; /* Cho Sidebar lên cao nhất */
+            padding: 20px 10px 0; /* Trả padding top về 20px để Logo/Tiêu đề sát trên cùng */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Đổi bóng đổ sang bên phải */
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-y: auto; 
         }
         
+        /* Các hiệu ứng Hover của Sidebar giữ nguyên */
         .sidebar .nav-link {
             font-weight: 500;
             color: rgba(255,255,255,.8);
             padding: 0.75rem 1rem;
             margin: 0.2rem 0;
             border-radius: 0.5rem;
+            transition: all 0.3s; 
         }
         
         .sidebar .nav-link:hover {
             color: white;
             background: rgba(255,255,255,.1);
+            transform: translateX(5px); 
         }
         
         .sidebar .nav-link.active {
             color: white;
             background: rgba(255,255,255,.2);
+            font-weight: bold;
         }
         
         .sidebar .nav-link i {
             margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* 2. Sửa lại Navbar: Chỉ bắt đầu từ sau Sidebar (250px) */
+        .navbar {
+            position: fixed; 
+            top: 0;
+            right: 0;
+            left: 250px; /* QUAN TRỌNG: Né cái Sidebar 250px ra */
+            width: auto; /* Ghi đè chiều rộng 100% mặc định của Bootstrap */
+            height: 60px; 
+            z-index: 1030; /* Thấp hơn Sidebar 1 chút */
+            background-color: white !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
+        /* 3. Sửa lại Main Content: Nằm dưới Navbar và bên phải Sidebar */
         main {
-            padding-top: 1.5rem;
-            margin-left: 240px;
+            padding-top: 80px; 
+            margin-left: 250px; 
+            min-height: 100vh;
+            transition: all 0.3s;
         }
         
         .navbar {
@@ -199,7 +225,7 @@
             });
         });
         
-        // Confirmation dialog for delete
+        // Confirmation dialog for delete (Đã fix chuẩn cho Laravel DELETE)
         function confirmDelete(url, message = 'Bạn có chắc chắn muốn xóa?') {
             Swal.fire({
                 title: 'Xác nhận',
@@ -212,7 +238,16 @@
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = url;
+                    // Tạo một Form ảo để gửi request DELETE an toànss
+                    let form = document.createElement('form');
+                    form.action = url;
+                    form.method = 'POST';
+                    form.innerHTML = `
+                        <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+                        <input type="hidden" name="_method" value="DELETE">
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             });
         }

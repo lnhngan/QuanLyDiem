@@ -30,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
     
     // Admin Routes
-    Route::prefix('admin')->name('admin.')->middleware('can:admin')->group(function() {
+    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function() {
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         
         // Quản lý giáo viên
@@ -65,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // Giáo viên Routes
-    Route::prefix('giaovien')->name('giaovien.')->middleware('can:giaovien')->group(function() {
+    Route::prefix('giaovien')->name('giaovien.')->middleware('role:giaovien')->group(function() {
         Route::get('/dashboard', [App\Http\Controllers\GiaoVien\DashboardController::class, 'index'])->name('dashboard');
         
         // Quản lý điểm
@@ -88,7 +88,7 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // Học sinh Routes
-    Route::prefix('hocsinh')->name('hocsinh.')->middleware('can:hocsinh')->group(function() {
+    Route::prefix('hocsinh')->name('hocsinh.')->middleware('role:hocsinh')->group(function() {
         Route::get('/dashboard', [App\Http\Controllers\HocSinh\DashboardController::class, 'index'])->name('dashboard');
         
         // Xem điểm
@@ -108,13 +108,3 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-//test
-Route::get('/test-middleware', function() {
-    $middlewares = app('router')->getMiddleware();
-    
-    return [
-        'registered_middlewares' => $middlewares,
-        'has_can_alias' => isset($middlewares['can']),
-        'can_alias_points_to' => $middlewares['can'] ?? 'not found',
-    ];
-});

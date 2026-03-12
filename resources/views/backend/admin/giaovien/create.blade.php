@@ -1,74 +1,43 @@
 @extends('layouts.backend')
-
-@section('title', 'Thêm giáo viên')
-@section('page-title', 'Thêm giáo viên mới')
+@section('title', 'Thêm Giáo viên')
 
 @section('content')
 <div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Thông tin giáo viên</h5>
-    </div>
+    <div class="card-header"><h5 class="mb-0">Thêm Giáo viên mới</h5></div>
     <div class="card-body">
         <form action="{{ route('admin.giaovien.store') }}" method="POST">
             @csrf
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="ho_ten" class="form-label">Họ tên <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('ho_ten') is-invalid @enderror" 
-                           id="ho_ten" name="ho_ten" value="{{ old('ho_ten') }}" required>
-                    @error('ho_ten')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mã Giáo viên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="ma_gv" value="{{ old('ma_gv') }}" required>
                 </div>
-                <div class="col-md-6">
-                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                           id="email" name="email" value="{{ old('email') }}" required>
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Họ tên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="ho_ten" value="{{ old('ho_ten') }}" required>
                 </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="so_dien_thoai" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('so_dien_thoai') is-invalid @enderror" 
-                           id="so_dien_thoai" name="so_dien_thoai" value="{{ old('so_dien_thoai') }}" required>
-                    @error('so_dien_thoai')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ old('email') }}">
                 </div>
-                <div class="col-md-6">
-                    <label for="ten_dang_nhap" class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('ten_dang_nhap') is-invalid @enderror" 
-                           id="ten_dang_nhap" name="ten_dang_nhap" value="{{ old('ten_dang_nhap') }}" required>
-                    @error('ten_dang_nhap')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" name="so_dien_thoai" value="{{ old('so_dien_thoai') }}">
                 </div>
             </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="mat_khau" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control @error('mat_khau') is-invalid @enderror" 
-                           id="mat_khau" name="mat_khau" required>
-                    @error('mat_khau')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+            <hr><h6 class="mb-3">Tài khoản đăng nhập</h6>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="ten_dang_nhap" value="{{ old('ten_dang_nhap') }}" required>
                 </div>
-                <div class="col-md-6">
-                    <label for="mat_khau_confirmation" class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control" id="mat_khau_confirmation" name="mat_khau_confirmation" required>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" name="mat_khau" required>
                 </div>
             </div>
-
-            <div class="d-flex justify-content-end">
-                <a href="{{ route('admin.giaovien.index') }}" class="btn btn-secondary me-2">Hủy</a>
-                <button type="submit" class="btn btn-primary">Lưu</button>
-            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu thông tin</button>
+            <a href="{{ route('admin.giaovien.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

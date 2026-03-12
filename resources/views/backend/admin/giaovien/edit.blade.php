@@ -1,59 +1,50 @@
 @extends('layouts.backend')
-
-@section('title', 'Sửa giáo viên')
-@section('page-title', 'Chỉnh sửa thông tin giáo viên')
+@section('title', 'Sửa Giáo viên')
 
 @section('content')
 <div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Thông tin giáo viên</h5>
-    </div>
+    <div class="card-header"><h5 class="mb-0">Cập nhật giáo viên: {{ $giaovien->ho_ten }}</h5></div>
     <div class="card-body">
         <form action="{{ route('admin.giaovien.update', $giaovien->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="ho_ten" class="form-label">Họ tên <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('ho_ten') is-invalid @enderror" 
-                           id="ho_ten" name="ho_ten" value="{{ old('ho_ten', $giaovien->ho_ten) }}" required>
-                    @error('ho_ten')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+            @csrf @method('PUT')
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mã Giáo viên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="ma_gv" value="{{ old('ma_gv', $giaovien->ma_gv) }}" required>
                 </div>
-                <div class="col-md-6">
-                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                           id="email" name="email" value="{{ old('email', $giaovien->email) }}" required>
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Họ tên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="ho_ten" value="{{ old('ho_ten', $giaovien->ho_ten) }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ old('email', $giaovien->email) }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" name="so_dien_thoai" value="{{ old('so_dien_thoai', $giaovien->so_dien_thoai) }}">
                 </div>
             </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="so_dien_thoai" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('so_dien_thoai') is-invalid @enderror" 
-                           id="so_dien_thoai" name="so_dien_thoai" value="{{ old('so_dien_thoai', $giaovien->so_dien_thoai) }}" required>
-                    @error('so_dien_thoai')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+            <hr><h6 class="mb-3">Tài khoản (Để trống MK nếu không đổi)</h6>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <input type="text" class="form-control" value="{{ $giaovien->taiKhoan->ten_dang_nhap ?? '' }}" disabled>
                 </div>
-                <div class="col-md-6">
-                    <label for="trang_thai" class="form-label">Trạng thái</label>
-                    <select class="form-select" id="trang_thai" name="trang_thai">
-                        <option value="1" {{ $giaovien->taiKhoan && $giaovien->taiKhoan->trang_thai ? 'selected' : '' }}>Hoạt động</option>
-                        <option value="0" {{ $giaovien->taiKhoan && !$giaovien->taiKhoan->trang_thai ? 'selected' : '' }}>Khóa</option>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Mật khẩu mới</label>
+                    <input type="password" class="form-control" name="mat_khau">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="trang_thai" class="form-select">
+                        <option value="1" {{ ($giaovien->taiKhoan->trang_thai ?? 1) == 1 ? 'selected' : '' }}>Hoạt động</option>
+                        <option value="0" {{ ($giaovien->taiKhoan->trang_thai ?? 1) == 0 ? 'selected' : '' }}>Khóa</option>
                     </select>
                 </div>
             </div>
-
-            <div class="d-flex justify-content-end">
-                <a href="{{ route('admin.giaovien.index') }}" class="btn btn-secondary me-2">Hủy</a>
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
-            </div>
+            <button type="submit" class="btn btn-warning"><i class="bi bi-pencil-square"></i> Cập nhật</button>
+            <a href="{{ route('admin.giaovien.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>
