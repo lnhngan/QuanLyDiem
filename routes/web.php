@@ -61,7 +61,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('danh-muc-tai-lieu', App\Http\Controllers\Admin\DanhMucTaiLieuController::class);
         
         // Quản lý tài liệu
-        Route::resource('tai-lieu', App\Http\Controllers\Admin\TaiLieuController::class);
+        Route::get('tai-lieu/thong-ke', [App\Http\Controllers\Admin\TaiLieuController::class, 'thongKe'])->name('tailieu.thong-ke');
+        Route::resource('tai-lieu', App\Http\Controllers\Admin\TaiLieuController::class);    
     });
     
     // Giáo viên Routes

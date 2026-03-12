@@ -17,12 +17,11 @@ class PhanCongGiangDayController extends Controller
      */
     public function index()
     {
-        $phanCongs = PhanCongGiangDay::with(['giaoVien', 'monHoc', 'lopHoc', 'hocKy'])
-            ->orderBy('hoc_ky_id', 'desc')
-            ->orderBy('lop_id')
-            ->paginate(15);
-            
-        return view('backend.admin.phan-cong.index', compact('phanCongs'));
+        // Lấy danh sách phân công, kèm theo các bảng liên kết (Giáo viên, Môn, Lớp, Năm học)
+        // Dùng get() hoặc all() để DataTables tự phân trang
+        $phancongs = \App\Models\PhanCongGiangDay::with(['giaoVien', 'monHoc', 'lopHoc', 'namHoc'])->get();
+        
+        return view('backend.admin.phan-cong.index', compact('phancongs'));
     }
 
     /**
@@ -30,12 +29,13 @@ class PhanCongGiangDayController extends Controller
      */
     public function create()
     {
-        $giaoviens = GiaoVien::all();
-        $monhocs = MonHoc::all();
-        $lophocs = LopHoc::with('khoiLop')->get();
-        $hockys = HocKy::with('namHoc')->get();
+        // Lấy toàn bộ dữ liệu cho các ô Dropdown (Select)
+        $giaoviens = \App\Models\GiaoVien::all();
+        $monhocs = \App\Models\MonHoc::all();
+        $lophocs = \App\Models\LopHoc::all();
+        $namhocs = \App\Models\NamHoc::all();
         
-        return view('backend.admin.phan-cong.create', compact('giaoviens', 'monhocs', 'lophocs', 'hockys'));
+        return view('backend.admin.phan-cong.create', compact('giaoviens', 'monhocs', 'lophocs', 'namhocs'));
     }
 
     /**
@@ -75,13 +75,16 @@ class PhanCongGiangDayController extends Controller
      */
     public function edit($id)
     {
-        $phanCong = PhanCongGiangDay::findOrFail($id);
-        $giaoviens = GiaoVien::all();
-        $monhocs = MonHoc::all();
-        $lophocs = LopHoc::with('khoiLop')->get();
-        $hockys = HocKy::with('namHoc')->get();
+        // Tìm bản ghi cần sửa
+        $phancong = \App\Models\PhanCongGiangDay::findOrFail($id);
         
-        return view('backend.admin.phan-cong.edit', compact('phanCong', 'giaoviens', 'monhocs', 'lophocs', 'hockys'));
+        // Vẫn phải lấy danh sách các bảng khác để làm dropdown chọn lại
+        $giaoviens = \App\Models\GiaoVien::all();
+        $monhocs = \App\Models\MonHoc::all();
+        $lophocs = \App\Models\LopHoc::all();
+        $namhocs = \App\Models\NamHoc::all();
+        
+        return view('backend.admin.phan-cong.edit', compact('phancong', 'giaoviens', 'monhocs', 'lophocs', 'namhocs'));
     }
 
     /**

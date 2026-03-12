@@ -36,7 +36,7 @@
                         <td class="fw-bold text-primary">{{ $lop->ten_lop }}</td>
                         <td>{{ $lop->khoiLop->ten_khoi ?? 'N/A' }}</td>
                         <td>{{ $lop->namHoc->ten_nam_hoc ?? 'N/A' }}</td>
-                        <td>{{ $lop->giaoVien->ho_ten ?? 'Chưa phân công' }}</td>
+                        <td>{{ $lop->giaoVienChuNhiem->ho_ten ?? 'Chưa phân công' }}</td>
                         <td>
                             <span class="badge bg-info text-dark">
                                 {{ $lop->hoc_sinhs_count ?? ($lop->hocSinhs ? $lop->hocSinhs->count() : 0) }} HS

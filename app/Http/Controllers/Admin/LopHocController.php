@@ -13,9 +13,11 @@ class LopHocController extends Controller
 {
     public function index()
     {
-        $lophocs = LopHoc::with(['khoiLop', 'namHoc', 'giaoVienChuNhiem'])
-            ->withCount('hocSinhs')
-            ->paginate(10);
+        // SỬA CHỮ 'giaoVien' THÀNH 'giaoVienChuNhiem' cho khớp với Model
+        $lophocs = \App\Models\LopHoc::with(['khoiLop', 'namHoc', 'giaoVienChuNhiem'])
+                    ->withCount('hocSinhs') // Đếm số học sinh trong lớp
+                    ->paginate(10); // Có thể dùng all() nếu bên ngoài view có DataTables
+                    
         return view('backend.admin.lophoc.index', compact('lophocs'));
     }
 

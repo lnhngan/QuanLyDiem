@@ -20,7 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($phancongs as $pc)
+                    @foreach($phancongs as $pc)
                     <tr>
                         <td class="fw-bold text-success">{{ $pc->giaoVien->ho_ten ?? 'N/A' }}</td>
                         <td>{{ $pc->monHoc->ten_mon_hoc ?? 'N/A' }}</td>
@@ -28,12 +28,10 @@
                         <td>{{ $pc->namHoc->ten_nam_hoc ?? 'N/A' }}</td>
                         <td>
                             <a href="{{ route('admin.phan-cong.edit', $pc->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                            <button onclick="confirmDelete('{{ route('admin.phan-cong.destroy', $pc->id) }}')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                            <button type="button" onclick="confirmDelete('{{ route('admin.phan-cong.destroy', $pc->id) }}')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>
-                    @empty
-                    <tr><td colspan="5" class="text-center">Chưa có phân công nào</td></tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>

@@ -8,16 +8,12 @@ use App\Models\LoaiDiem;
 
 class LoaiDiemController extends Controller
 {
-    public function index()
+   public function index()
     {
-        // Lấy danh sách lớp học, kèm theo thông tin Khóa ngoại (Khối, Năm học, Giáo viên)
-        // để không bị lỗi khi ra ngoài View
-        $lophocs = \App\Models\LopHoc::with(['khoiLop', 'namHoc', 'giaoVien'])
-                    ->withCount('hocSinhs') // Đếm số học sinh trong lớp
-                    ->paginate(10);
-                    
-        // Phải gọi đúng tên thư mục: lophoc và tên file: index
-        return view('backend.admin.lophoc.index', compact('lophocs'));
+        // Lấy toàn bộ dữ liệu loại điểm
+        $loaiDiems = \App\Models\LoaiDiem::all(); 
+        
+        return view('backend.admin.loai-diem.index', compact('loaiDiems'));
     }
 
     public function create()

@@ -21,7 +21,7 @@
                     <strong>Năm học:</strong> <span>{{ $lophoc->namHoc->ten_nam_hoc ?? 'N/A' }}</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
-                    <strong>GVCN:</strong> <span>{{ $lophoc->giaoVien->ho_ten ?? 'Chưa cập nhật' }}</span>
+                    <strong>GVCN:</strong> <span>{{ $lophoc->giaoVienChuNhiem->ho_ten ?? 'Chưa cập nhật' }}</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
                     <strong>Tổng số HS:</strong> 
