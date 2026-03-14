@@ -41,12 +41,12 @@
                     </select>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label for="giao_vien_id" class="form-label">Giáo viên chủ nhiệm</label>
-                    <select class="form-select" id="giao_vien_id" name="giao_vien_id">
+               <div class="col-md-6 mb-3">
+                    <label for="gv_chu_nhiem_id" class="form-label">Giáo viên chủ nhiệm</label>
+                    <select class="form-select" id="gv_chu_nhiem_id" name="gv_chu_nhiem_id">
                         <option value="">-- Chưa phân công --</option>
                         @foreach($giaoviens as $gv)
-                            <option value="{{ $gv->id }}" {{ (old('giao_vien_id') ?? $lophoc->giao_vien_id) == $gv->id ? 'selected' : '' }}>
+                            <option value="{{ $gv->id }}" {{ (old('gv_chu_nhiem_id') ?? $lophoc->gv_chu_nhiem_id) == $gv->id ? 'selected' : '' }}>
                                 {{ $gv->ho_ten }} ({{ $gv->ma_gv }})
                             </option>
                         @endforeach

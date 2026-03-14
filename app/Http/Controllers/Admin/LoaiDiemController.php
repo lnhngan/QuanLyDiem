@@ -36,20 +36,23 @@ class LoaiDiemController extends Controller
 
     public function edit($id)
     {
-        $loaidiem = LoaiDiem::findOrFail($id);
-        return view('backend.admin.loai-diem.edit', compact('loaidiem'));
+        // Đổi $loaidiem thành $loaiDiem (chữ D viết hoa)
+        $loaiDiem = LoaiDiem::findOrFail($id);
+        
+        // Sửa trong compact() thành 'loaiDiem'
+        return view('backend.admin.loai-diem.edit', compact('loaiDiem'));
     }
 
     public function update(Request $request, $id)
     {
-        $loaidiem = LoaiDiem::findOrFail($id);
+        $loaiDiem = LoaiDiem::findOrFail($id);
         
         $request->validate([
             'ten_loai_diem' => 'required|string|max:50',
             'he_so' => 'required|integer|min:1|max:10',
         ]);
 
-        $loaidiem->update($request->all());
+        $loaiDiem->update($request->all());
 
         return redirect()->route('admin.loai-diem.index')
             ->with('success', 'Cập nhật loại điểm thành công');
@@ -57,14 +60,14 @@ class LoaiDiemController extends Controller
 
     public function destroy($id)
     {
-        $loaidiem = LoaiDiem::findOrFail($id);
+        $loaiDiem = LoaiDiem::findOrFail($id);
         
-        if ($loaidiem->bangDiems()->count() > 0) {
+        if ($loaiDiem->bangDiems()->count() > 0) {
             return redirect()->route('admin.loai-diem.index')
                 ->with('error', 'Không thể xóa loại điểm đã được sử dụng');
         }
 
-        $loaidiem->delete();
+        $loaiDiem->delete();
 
         return redirect()->route('admin.loai-diem.index')
             ->with('success', 'Xóa loại điểm thành công');
