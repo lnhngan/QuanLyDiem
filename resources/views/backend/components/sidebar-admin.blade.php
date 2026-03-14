@@ -98,7 +98,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('admin.tai-lieu*') ? 'active' : '' }}" 
-                   href="{{ route('admin.tai-lieu.index') }}">
+                   href="{{ route('admin.tailieu.index') }}">
                     <i class="bi bi-file-text"></i>
                     Tài liệu
                 </a>

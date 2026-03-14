@@ -12,6 +12,7 @@ class GiaoVien extends Model
     protected $table = 'giao_vien';
     protected $fillable = [
         'tai_khoan_id', 
+        'ma_gv',
         'ho_ten', 
         'so_dien_thoai', 
         'email'

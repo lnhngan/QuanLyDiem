@@ -86,4 +86,12 @@ class LopHocController extends Controller
         return redirect()->route('admin.lophoc.index')
             ->with('success', 'Xóa lớp học thành công');
     }
+    public function show($id)
+    {
+        // Lấy thông tin lớp học cùng với các bảng liên kết để hiển thị ra View
+        $lophoc = \App\Models\LopHoc::with(['khoiLop', 'namHoc', 'giaoVienChuNhiem', 'hocSinhs'])
+                    ->findOrFail($id);
+                    
+        return view('backend.admin.lophoc.show', compact('lophoc'));
+    }
 }

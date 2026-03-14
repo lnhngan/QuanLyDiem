@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -14,27 +13,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Thêm vai trò
+        // 1. Thêm vai trò (Roles)
         DB::table('vai_tro')->insert([
-            ['ten_vai_tro' => 'Admin'],
-            ['ten_vai_tro' => 'Giáo viên'],
-            ['ten_vai_tro' => 'Học sinh'],
+            ['id' => 1, 'ten_vai_tro' => 'Admin'],
+            ['id' => 2, 'ten_vai_tro' => 'Giáo viên'],
+            ['id' => 3, 'ten_vai_tro' => 'Học sinh'],
         ]);
 
-        // 2. Thêm tài khoản admin hệ thống
+        // 2. Thêm tài khoản Admin hệ thống (ID: 1)
         DB::table('tai_khoan')->insert([
+            'id' => 1,
             'ten_dang_nhap' => 'admin',
             'mat_khau' => Hash::make('123456'),
-            'vai_tro_id' => 1,
+            'vai_tro_id' => 1, // Vai trò Admin
             'trang_thai' => true,
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         // 3. Thêm năm học
         DB::table('nam_hoc')->insert([
-            ['ten_nam_hoc' => '2024-2025'],
-            ['ten_nam_hoc' => '2025-2026'],
+            ['id' => 1, 'ten_nam_hoc' => '2024-2025'],
+            ['id' => 2, 'ten_nam_hoc' => '2025-2026'],
         ]);
 
         // 4. Thêm học kỳ
@@ -45,19 +44,19 @@ class DatabaseSeeder extends Seeder
 
         // 5. Thêm khối lớp
         DB::table('khoi_lop')->insert([
-            ['ten_khoi' => 'Khối 10'],
-            ['ten_khoi' => 'Khối 11'],
-            ['ten_khoi' => 'Khối 12'],
+            ['id' => 1, 'ten_khoi' => 'Khối 10'],
+            ['id' => 2, 'ten_khoi' => 'Khối 11'],
+            ['id' => 3, 'ten_khoi' => 'Khối 12'],
         ]);
 
-        // 6. Thêm môn học
+        // 6. Thêm môn học (BỔ SUNG ma_mon theo cấu trúc mới)
         DB::table('mon_hoc')->insert([
-            ['ten_mon_hoc' => 'Toán'],
-            ['ten_mon_hoc' => 'Ngữ Văn'],
-            ['ten_mon_hoc' => 'Tiếng Anh'],
-            ['ten_mon_hoc' => 'Vật Lý'],
-            ['ten_mon_hoc' => 'Hóa Học'],
-            ['ten_mon_hoc' => 'Sinh Học'],
+            ['ma_mon' => 'TOAN', 'ten_mon_hoc' => 'Toán'],
+            ['ma_mon' => 'VAN', 'ten_mon_hoc' => 'Ngữ Văn'],
+            ['ma_mon' => 'ANH', 'ten_mon_hoc' => 'Tiếng Anh'],
+            ['ma_mon' => 'LY', 'ten_mon_hoc' => 'Vật Lý'],
+            ['ma_mon' => 'HOA', 'ten_mon_hoc' => 'Hóa Học'],
+            ['ma_mon' => 'SINH', 'ten_mon_hoc' => 'Sinh Học'],
         ]);
 
         // 7. Thêm loại điểm
@@ -74,11 +73,25 @@ class DatabaseSeeder extends Seeder
             ['ten_danh_muc' => 'Đề thi'],
             ['ten_danh_muc' => 'Bài tập'],
         ]);
-        
 
-        User::factory()->create([
-             'name' => 'Test User',
-             'email' => 'test@example.com',
-         ]);
+        // 9. Dữ liệu mẫu cho Giáo viên (Dùng cho cấu trúc 3 tầng)
+        // Tạo tài khoản cho giáo viên trước
+        DB::table('tai_khoan')->insert([
+            'id' => 2,
+            'ten_dang_nhap' => 'gv001',
+            'mat_khau' => Hash::make('123456'),
+            'vai_tro_id' => 2, // Vai trò Giáo viên
+            'trang_thai' => true,
+        ]);
+        // Liên kết với thông tin giáo viên
+        DB::table('giao_vien')->insert([
+            'tai_khoan_id' => 2,
+            'ma_gv' => 'GV001', // Mã nghiệp vụ
+            'ho_ten' => 'Nguyễn Văn Giáo Viên',
+            'email' => 'gv@example.com',
+            'so_dien_thoai' => '0987654321',
+        ]);
+        
+        $this->command->info('Đã cập nhật Seeder theo cấu trúc mới thành công!');
     }
 }

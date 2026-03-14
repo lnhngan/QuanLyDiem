@@ -10,7 +10,7 @@ class MonHoc extends Model
     use HasFactory;
 
     protected $table = 'mon_hoc';
-    protected $fillable = ['ten_mon_hoc'];
+    protected $fillable = ['ma_mon','ten_mon_hoc'];
 
     /**
      * Một môn học có nhiều phân công giảng dạy

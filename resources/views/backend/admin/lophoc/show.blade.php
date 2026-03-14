@@ -51,7 +51,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($lophoc->hocSinhs as $key => $hs)
+                            @foreach($lophoc->hocSinhs as $key => $hs)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
                                 <td><span class="badge bg-secondary">{{ $hs->ma_hs }}</span></td>
@@ -64,11 +64,7 @@
                                     </a>
                                 </td>
                             </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-4">Lớp này hiện chưa có học sinh nào.</td>
-                            </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

@@ -90,7 +90,7 @@ class TaiLieuController extends Controller
             'giao_vien_id' => $request->giao_vien_id,
         ]);
 
-        return redirect()->route('admin.tai-lieu.index')
+        return redirect()->route('admin.tailieu.index')
             ->with('success', 'Thêm tài liệu thành công');
     }
 
@@ -156,7 +156,7 @@ class TaiLieuController extends Controller
 
         $tailieu->update($data);
 
-        return redirect()->route('admin.tai-lieu.index')
+        return redirect()->route('admin.tailieu.index')
             ->with('success', 'Cập nhật tài liệu thành công');
     }
 
@@ -172,7 +172,7 @@ class TaiLieuController extends Controller
         
         $tailieu->delete();
 
-        return redirect()->route('admin.tai-lieu.index')
+        return redirect()->route('admin.tailieu.index')
             ->with('success', 'Xóa tài liệu thành công');
     }
 

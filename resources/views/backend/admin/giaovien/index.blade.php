@@ -30,7 +30,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($giaoviens as $gv)
+                    @foreach($giaoviens as $gv)
                     <tr>
                         <td><span class="badge bg-secondary">{{ $gv->ma_gv }}</span></td>
                         <td class="fw-bold">{{ $gv->ho_ten }}</td>
@@ -47,15 +47,10 @@
                         <td>
                             <a href="{{ route('admin.giaovien.show', $gv->id) }}" class="btn btn-info btn-sm text-white"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('admin.giaovien.edit', $gv->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                            <form action="{{ route('admin.giaovien.destroy', $gv->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa giáo viên này?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                            </form>
+                            <button type="button" onclick="confirmDelete('{{ route('admin.giaovien.destroy', $gv->id) }}')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>
-                    @empty
-                    <tr><td colspan="7" class="text-center">Chưa có dữ liệu</td></tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>

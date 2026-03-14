@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('mon_hoc', function (Blueprint $table) {
             $table->id();
+            $table->string('ma_mon')->unique();
             $table->string('ten_mon_hoc');
             $table->timestamps();
         });

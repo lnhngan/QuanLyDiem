@@ -6,7 +6,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Danh sách Tài liệu học tập</h5>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.tailieu.thong-ke') }}" class="btn btn-info btn-sm text-white"><i class="bi bi-bar-chart"></i> Thống kê</a>
+            <a href="{{ route(name: 'admin.tailieu.thong-ke') }}" class="btn btn-info btn-sm text-white"><i class="bi bi-bar-chart"></i> Thống kê</a>
             <a href="{{ route('admin.tailieu.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-cloud-upload"></i> Upload Tài liệu</a>
         </div>
     </div>

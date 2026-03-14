@@ -22,6 +22,7 @@ class MonHocController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'ma_mon' => 'required|string|unique:mon_hoc|max:20',
             'ten_mon_hoc' => 'required|string|unique:mon_hoc|max:50',
         ]);
 
@@ -42,6 +43,7 @@ class MonHocController extends Controller
         $monhoc = MonHoc::findOrFail($id);
         
         $request->validate([
+            'ma_mon' => 'required|string|unique:mon_hoc,ma_mon,' . $id . '|max:20',
             'ten_mon_hoc' => 'required|string|unique:mon_hoc,ten_mon_hoc,' . $id . '|max:50',
         ]);
 

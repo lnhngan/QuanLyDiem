@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('giao_vien', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tai_khoan_id')->constrained('tai_khoan');
+            $table->string('ma_gv')->unique();
             $table->string('ho_ten');
             $table->string('so_dien_thoai')->nullable();
             $table->string('email')->nullable();

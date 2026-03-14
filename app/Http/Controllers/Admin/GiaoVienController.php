@@ -25,6 +25,7 @@ class GiaoVienController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'ma_gv' => 'required|string|unique:giao_vien',
             'ho_ten' => 'required|string|max:255',
             'email' => 'required|email|unique:giao_vien',
             'so_dien_thoai' => 'required|string|max:15',
@@ -45,6 +46,7 @@ class GiaoVienController extends Controller
         // Tạo giáo viên
         GiaoVien::create([
             'tai_khoan_id' => $taiKhoan->id,
+            'ma_gv' => $request->ma_gv,
             'ho_ten' => $request->ho_ten,
             'email' => $request->email,
             'so_dien_thoai' => $request->so_dien_thoai,
@@ -65,6 +67,7 @@ class GiaoVienController extends Controller
         $giaovien = GiaoVien::findOrFail($id);
         
         $request->validate([
+            'ma_gv' => 'required|string|unique:giao_vien,ma_gv,' . $id, 
             'ho_ten' => 'required|string|max:255',
             'email' => 'required|email|unique:giao_vien,email,' . $id,
             'so_dien_thoai' => 'required|string|max:15',
@@ -72,6 +75,7 @@ class GiaoVienController extends Controller
         ]);
 
         $giaovien->update([
+            'ma_gv' => $request->ma_gv,
             'ho_ten' => $request->ho_ten,
             'email' => $request->email,
             'so_dien_thoai' => $request->so_dien_thoai,
@@ -98,5 +102,13 @@ class GiaoVienController extends Controller
 
         return redirect()->route('admin.giaovien.index')
             ->with('success', 'Xóa giáo viên thành công');
+    }
+   public function show($id)
+    {
+        // Đổi $giaoVien thành $giaovien (v viết thường)
+        $giaovien = \App\Models\GiaoVien::with('taiKhoan')->findOrFail($id);
+        
+        // Truyền compact('giaovien') để khớp với View
+        return view('backend.admin.giaovien.show', compact('giaovien'));
     }
 }

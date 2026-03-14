@@ -10,7 +10,7 @@
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Mã Học sinh</label>
-                    <input type="text" class="form-control" name="ma_hs" value="{{ $hocsinh->ma_hs }}" required>
+                    <input type="text" class="form-control" name="ma_hoc_sinh" value="{{ $hocsinh->ma_hs }}" required>
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Họ tên</label>

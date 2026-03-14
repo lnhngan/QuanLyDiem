@@ -21,28 +21,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($hocsinhs as $hs)
+                    @foreach($hocsinhs as $hs)
                     <tr>
-                        <td><span class="badge bg-secondary">{{ $hs->ma_hs }}</span></td>
+                        <td><span class="badge bg-secondary">{{ $hs->ma_hoc_sinh }}</span></td>
                         <td class="fw-bold">{{ $hs->ho_ten }}</td>
                         <td>{{ \Carbon\Carbon::parse($hs->ngay_sinh)->format('d/m/Y') }}</td>
                         <td>{{ $hs->lopHoc->ten_lop ?? 'Chưa xếp lớp' }}</td>
                         <td>
-                            @if($hs->taiKhoan && $hs->taiKhoan->trang_thai) <span class="badge bg-success">Hoạt động</span>
-                            @else <span class="badge bg-danger">Khóa</span> @endif
+                            @if($hs->taiKhoan && $hs->taiKhoan->trang_thai) 
+                                <span class="badge bg-success">Hoạt động</span>
+                            @else 
+                                <span class="badge bg-danger">Khóa</span> 
+                            @endif
                         </td>
                         <td>
                             <a href="{{ route('admin.hocsinh.show', $hs->id) }}" class="btn btn-info btn-sm text-white"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('admin.hocsinh.edit', $hs->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                            <form action="{{ route('admin.hocsinh.destroy', $hs->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa học sinh này?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                            </form>
+                            <button type="button" onclick="confirmDelete('{{ route('admin.hocsinh.destroy', $hs->id) }}')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>
-                    @empty
-                    <tr><td colspan="6" class="text-center">Chưa có dữ liệu</td></tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>

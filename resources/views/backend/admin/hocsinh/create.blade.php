@@ -10,7 +10,7 @@
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Mã Học sinh <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="ma_hs" required>
+                    <input type="text" class="form-control" name="ma_hoc_sinh" required>
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Họ tên <span class="text-danger">*</span></label>

@@ -66,7 +66,7 @@
                                 <td>{{ $hs->ma_hoc_sinh }}</td>
                                 <td>{{ $hs->ho_ten }}</td>
                                 <td>{{ $hs->lop->ten_lop ?? 'Chưa xếp lớp' }}</td>
-                                <td>{{ $hs->ngay_sinh->format('d/m/Y') }}</td>
+                                <td>{{ $hs->ngay_sinh ? $hs->ngay_sinh->format('d/m/Y') : 'N/A' }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -98,7 +98,7 @@
                                 <td>{{ $gv->ho_ten }}</td>
                                 <td>{{ $gv->email }}</td>
                                 <td>{{ $gv->so_dien_thoai }}</td>
-                                <td>{{ $gv->created_at->format('d/m/Y') }}</td>
+                                <td>{{ $gv->created_at ? $gv->created_at->format('d/m/Y') : 'N/A' }}</td>
                             </tr>
                             @endforeach
                         </tbody>
