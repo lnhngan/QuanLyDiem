@@ -26,17 +26,17 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Lớp học <span class="text-danger">*</span></label>
-                    <select class="form-select" name="lop_hoc_id" required>
+                    <select class="form-select" name="lop_id" required>
                         @foreach($lophocs as $lop)
-                            <option value="{{ $lop->id }}" {{ $phancong->lop_hoc_id == $lop->id ? 'selected' : '' }}>{{ $lop->ten_lop }}</option>
+                            <option value="{{ $lop->id }}" {{ $phancong->lop_id == $lop->id ? 'selected' : '' }}>{{ $lop->ten_lop }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Năm học <span class="text-danger">*</span></label>
-                    <select class="form-select" name="nam_hoc_id" required>
-                        @foreach($namhocs as $nh)
-                            <option value="{{ $nh->id }}" {{ $phancong->nam_hoc_id == $nh->id ? 'selected' : '' }}>{{ $nh->ten_nam_hoc }}</option>
+                    <label class="form-label">Học kỳ <span class="text-danger">*</span></label>
+                    <select class="form-select" name="hoc_ky_id" required>
+                        @foreach($hockys as $hk)
+                            <option value="{{ $hk->id }}" {{ $phancong->hoc_ky_id == $hk->id ? 'selected' : '' }}>{{ $hk->ten_hoc_ky }}</option>
                         @endforeach
                     </select>
                 </div>

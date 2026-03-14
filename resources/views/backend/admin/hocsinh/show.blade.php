@@ -9,7 +9,7 @@
     <div class="card-header bg-primary text-white"><h5 class="mb-0">Hồ sơ Học sinh: {{ $hocsinh->ho_ten }}</h5></div>
     <div class="card-body">
         <table class="table table-bordered">
-            <tr><th width="200">Mã HS</th><td><span class="badge bg-secondary">{{ $hocsinh->ma_hs }}</span></td></tr>
+            <tr><th width="200">Mã HS</th><td><span class="badge bg-secondary">{{ $hocsinh->ma_hoc_sinh }}</span></td></tr>
             <tr><th>Họ tên</th><td class="fw-bold">{{ $hocsinh->ho_ten }}</td></tr>
             <tr><th>Ngày sinh</th><td>{{ \Carbon\Carbon::parse($hocsinh->ngay_sinh)->format('d/m/Y') }}</td></tr>
             <tr><th>Giới tính</th><td>{{ $hocsinh->gioi_tinh ? 'Nam' : 'Nữ' }}</td></tr>

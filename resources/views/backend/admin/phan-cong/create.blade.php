@@ -28,7 +28,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Lớp học <span class="text-danger">*</span></label>
-                    <select class="form-select" name="lop_hoc_id" required>
+                    <select class="form-select" name="lop_id" required>
                         <option value="">-- Chọn Lớp học --</option>
                         @foreach($lophocs as $lop)
                             <option value="{{ $lop->id }}">{{ $lop->ten_lop }}</option>
@@ -36,11 +36,11 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Năm học <span class="text-danger">*</span></label>
-                    <select class="form-select" name="nam_hoc_id" required>
-                        <option value="">-- Chọn Năm học --</option>
-                        @foreach($namhocs as $nh)
-                            <option value="{{ $nh->id }}">{{ $nh->ten_nam_hoc }}</option>
+                    <label class="form-label">Học kỳ <span class="text-danger">*</span></label>
+                    <select class="form-select" name="hoc_ky_id" required>
+                        <option value="">-- Chọn Học kỳ --</option>
+                        @foreach($hockys as $hk)
+                            <option value="{{ $hk->id }}">{{ $hk->ten_hoc_ky }}</option>
                         @endforeach
                     </select>
                 </div>

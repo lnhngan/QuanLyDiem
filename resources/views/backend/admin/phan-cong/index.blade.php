@@ -15,7 +15,7 @@
                         <th>Giáo viên</th>
                         <th>Môn học</th>
                         <th>Lớp học</th>
-                        <th>Năm học</th>
+                        <th>Học kỳ</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -25,7 +25,7 @@
                         <td class="fw-bold text-success">{{ $pc->giaoVien->ho_ten ?? 'N/A' }}</td>
                         <td>{{ $pc->monHoc->ten_mon_hoc ?? 'N/A' }}</td>
                         <td>{{ $pc->lopHoc->ten_lop ?? 'N/A' }}</td>
-                        <td>{{ $pc->namHoc->ten_nam_hoc ?? 'N/A' }}</td>
+                        <td>{{ $pc->hocKy->ten_hoc_ky ?? 'N/A' }}</td>
                         <td>
                             <a href="{{ route('admin.phan-cong.edit', $pc->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                             <button type="button" onclick="confirmDelete('{{ route('admin.phan-cong.destroy', $pc->id) }}')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>

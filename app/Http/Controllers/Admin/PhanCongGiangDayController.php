@@ -12,35 +12,24 @@ use App\Models\HocKy;
 
 class PhanCongGiangDayController extends Controller
 {
-    /**
-     * Hiển thị danh sách phân công giảng dạy
-     */
     public function index()
     {
-        // Lấy danh sách phân công, kèm theo các bảng liên kết (Giáo viên, Môn, Lớp, Năm học)
-        // Dùng get() hoặc all() để DataTables tự phân trang
-        $phancongs = \App\Models\PhanCongGiangDay::with(['giaoVien', 'monHoc', 'lopHoc', 'namHoc'])->get();
-        
+        // Chỉnh lại eager loading 'hocKy' thay vì 'namHoc'
+        $phancongs = PhanCongGiangDay::with(['giaoVien', 'monHoc', 'lopHoc', 'hocKy'])->get();
         return view('backend.admin.phan-cong.index', compact('phancongs'));
     }
 
-    /**
-     * Hiển thị form thêm phân công mới
-     */
     public function create()
     {
-        // Lấy toàn bộ dữ liệu cho các ô Dropdown (Select)
-        $giaoviens = \App\Models\GiaoVien::all();
-        $monhocs = \App\Models\MonHoc::all();
-        $lophocs = \App\Models\LopHoc::all();
-        $namhocs = \App\Models\NamHoc::all();
+        $giaoviens = GiaoVien::all();
+        $monhocs = MonHoc::all();
+        $lophocs = LopHoc::all();
+        // Lấy danh sách Học Kỳ thay vì Năm Học
+        $hockys = HocKy::all(); 
         
-        return view('backend.admin.phan-cong.create', compact('giaoviens', 'monhocs', 'lophocs', 'namhocs'));
+        return view('backend.admin.phan-cong.create', compact('giaoviens', 'monhocs', 'lophocs', 'hockys'));
     }
 
-    /**
-     * Lưu phân công mới vào database
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -48,11 +37,12 @@ class PhanCongGiangDayController extends Controller
             'mon_hoc_id' => 'required|exists:mon_hoc,id',
             'lop_id' => 'required|exists:lop_hoc,id',
             'hoc_ky_id' => 'required|exists:hoc_ky,id',
+        ], [
+            'required' => 'Vui lòng chọn đầy đủ thông tin phân công.',
         ]);
 
-        // Kiểm tra phân công đã tồn tại chưa
+        // Kiểm tra phân công đã tồn tại chưa (1 môn của 1 lớp trong 1 học kỳ chỉ có 1 người dạy)
         $exists = PhanCongGiangDay::where([
-            'giao_vien_id' => $request->giao_vien_id,
             'mon_hoc_id' => $request->mon_hoc_id,
             'lop_id' => $request->lop_id,
             'hoc_ky_id' => $request->hoc_ky_id,
@@ -61,35 +51,26 @@ class PhanCongGiangDayController extends Controller
         if ($exists) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Phân công này đã tồn tại trong hệ thống');
+                ->with('error', 'Lớp này đã được phân công giáo viên dạy môn này trong học kỳ này!');
         }
 
         PhanCongGiangDay::create($request->all());
 
         return redirect()->route('admin.phan-cong.index')
-            ->with('success', 'Thêm phân công giảng dạy thành công');
+            ->with('success', 'Thêm phân công giảng dạy thành công!');
     }
 
-    /**
-     * Hiển thị form chỉnh sửa phân công
-     */
     public function edit($id)
     {
-        // Tìm bản ghi cần sửa
-        $phancong = \App\Models\PhanCongGiangDay::findOrFail($id);
+        $phancong = PhanCongGiangDay::findOrFail($id);
+        $giaoviens = GiaoVien::all();
+        $monhocs = MonHoc::all();
+        $lophocs = LopHoc::all();
+        $hockys = HocKy::all();
         
-        // Vẫn phải lấy danh sách các bảng khác để làm dropdown chọn lại
-        $giaoviens = \App\Models\GiaoVien::all();
-        $monhocs = \App\Models\MonHoc::all();
-        $lophocs = \App\Models\LopHoc::all();
-        $namhocs = \App\Models\NamHoc::all();
-        
-        return view('backend.admin.phan-cong.edit', compact('phancong', 'giaoviens', 'monhocs', 'lophocs', 'namhocs'));
+        return view('backend.admin.phan-cong.edit', compact('phancong', 'giaoviens', 'monhocs', 'lophocs', 'hockys'));
     }
 
-    /**
-     * Cập nhật phân công trong database
-     */
     public function update(Request $request, $id)
     {
         $phanCong = PhanCongGiangDay::findOrFail($id);
@@ -103,7 +84,6 @@ class PhanCongGiangDayController extends Controller
 
         // Kiểm tra trùng lặp (trừ bản thân nó)
         $exists = PhanCongGiangDay::where([
-            'giao_vien_id' => $request->giao_vien_id,
             'mon_hoc_id' => $request->mon_hoc_id,
             'lop_id' => $request->lop_id,
             'hoc_ky_id' => $request->hoc_ky_id,
@@ -112,23 +92,19 @@ class PhanCongGiangDayController extends Controller
         if ($exists) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Phân công này đã tồn tại trong hệ thống');
+                ->with('error', 'Lớp này đã được phân công giáo viên khác dạy môn này trong học kỳ này!');
         }
 
         $phanCong->update($request->all());
 
         return redirect()->route('admin.phan-cong.index')
-            ->with('success', 'Cập nhật phân công giảng dạy thành công');
+            ->with('success', 'Cập nhật phân công giảng dạy thành công!');
     }
 
-    /**
-     * Xóa phân công
-     */
     public function destroy($id)
     {
         $phanCong = PhanCongGiangDay::findOrFail($id);
         
-        // Kiểm tra xem đã có điểm số nào chưa
         $hasDiem = $phanCong->giaoVien->bangDiems()
             ->where('mon_hoc_id', $phanCong->mon_hoc_id)
             ->where('hoc_ky_id', $phanCong->hoc_ky_id)
@@ -136,18 +112,15 @@ class PhanCongGiangDayController extends Controller
 
         if ($hasDiem) {
             return redirect()->route('admin.phan-cong.index')
-                ->with('error', 'Không thể xóa phân công đã có điểm số');
+                ->with('error', 'Không thể xóa phân công do giáo viên này đã vào điểm.');
         }
 
         $phanCong->delete();
 
         return redirect()->route('admin.phan-cong.index')
-            ->with('success', 'Xóa phân công giảng dạy thành công');
+            ->with('success', 'Xóa phân công giảng dạy thành công!');
     }
 
-    /**
-     * API lấy danh sách phân công theo giáo viên
-     */
     public function getByGiaoVien($giaoVienId)
     {
         $phanCongs = PhanCongGiangDay::with(['monHoc', 'lopHoc', 'hocKy'])
@@ -157,9 +130,6 @@ class PhanCongGiangDayController extends Controller
         return response()->json($phanCongs);
     }
 
-    /**
-     * API lấy danh sách phân công theo lớp
-     */
     public function getByLop($lopId, $hocKyId = null)
     {
         $query = PhanCongGiangDay::with(['giaoVien', 'monHoc'])
@@ -170,7 +140,6 @@ class PhanCongGiangDayController extends Controller
         }
         
         $phanCongs = $query->get();
-        
         return response()->json($phanCongs);
     }
 }

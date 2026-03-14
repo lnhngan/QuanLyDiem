@@ -106,4 +106,18 @@ class HocSinhController extends Controller
         return redirect()->route('admin.hocsinh.index')
             ->with('success', 'Xóa học sinh thành công');
     }
+
+    public function show($id)
+    {
+        // Tìm học sinh theo ID, lấy kèm các bảng liên kết để tránh lỗi N+1 query
+        $hocsinh = \App\Models\HocSinh::with([
+            'taiKhoan', 
+            'lop', 
+            'bangDiems.hocKy', 
+            'bangDiems.monHoc', 
+            'bangDiems.loaiDiem'
+        ])->findOrFail($id);
+        
+        return view('backend.admin.hocsinh.show', compact('hocsinh'));
+    }
 }
