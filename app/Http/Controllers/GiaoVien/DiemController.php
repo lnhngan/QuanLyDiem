@@ -16,12 +16,22 @@ class DiemController extends Controller
     {
         $giaoVien = Auth::user()->giaoVien;
         
-        // Lấy danh sách phân công giảng dạy của giáo viên
         $phanCongs = PhanCongGiangDay::with(['lopHoc', 'monHoc', 'hocKy'])
             ->where('giao_vien_id', $giaoVien->id)
             ->get();
+            
+        // Thêm dòng này để truyền $loaiDiems ra giao diện
+        $loaiDiems = LoaiDiem::orderBy('he_so', 'asc')->get(); 
         
-        return view('backend.giaovien.diem.nhap', compact('phanCongs'));
+        return view('backend.giaovien.diem.nhap', compact('phanCongs', 'loaiDiems'));
+    }
+    public function getHocSinhTheoPhanCong(Request $request)
+    {
+        $phanCong = PhanCongGiangDay::findOrFail($request->phan_cong_id);
+        // Lấy danh sách học sinh thuộc lớp của phân công đó
+        $hocSinhs = HocSinh::where('lop_id', $phanCong->lop_id)->orderBy('ho_ten', 'asc')->get();
+        
+        return response()->json($hocSinhs);
     }
 
     public function luuDiem(Request $request)
@@ -52,15 +62,45 @@ class DiemController extends Controller
         return response()->json(['success' => true, 'message' => 'Nhập điểm thành công']);
     }
 
-    public function danhSach()
+    public function danhSach(Request $request)
     {
         $giaoVien = Auth::user()->giaoVien;
         
-        $bangDiems = BangDiem::with(['hocSinh', 'monHoc', 'hocKy', 'loaiDiem'])
+        // 1. Lấy danh sách lớp và môn mà giáo viên này dạy để tạo Dropdown chọn
+        $phanCongs = PhanCongGiangDay::with(['lopHoc', 'monHoc', 'hocKy'])
             ->where('giao_vien_id', $giaoVien->id)
-            ->paginate(20);
-        
-        return view('backend.giaovien.diem.danh-sach', compact('bangDiems'));
+            ->get();
+            
+        // 2. Lấy tất cả loại điểm trong hệ thống làm cột (Sắp xếp theo hệ số)
+        $loaiDiems = LoaiDiem::orderBy('he_so', 'asc')->get();
+
+        $phanCongActive = null;
+        $hocSinhs = collect();
+        $diemDaNhap = [];
+
+        // 3. Xử lý khi giáo viên chọn 1 môn/lớp cụ thể để xem danh sách
+        if ($request->has('phan_cong_id') && $request->phan_cong_id != '') {
+            $phanCongActive = PhanCongGiangDay::with(['lopHoc', 'monHoc', 'hocKy'])->findOrFail($request->phan_cong_id);
+            
+            // Bảo mật: Đảm bảo chỉ xem được lớp mình dạy
+            if ($phanCongActive->giao_vien_id == $giaoVien->id) {
+                // Lấy danh sách học sinh của lớp đó
+                $hocSinhs = HocSinh::where('lop_id', $phanCongActive->lop_id)->orderBy('ho_ten', 'asc')->get();
+                
+                // Lấy toàn bộ điểm của lớp đó, môn đó, học kỳ đó
+                $bangDiems = BangDiem::where('mon_hoc_id', $phanCongActive->mon_hoc_id)
+                    ->where('hoc_ky_id', $phanCongActive->hoc_ky_id)
+                    ->whereIn('hoc_sinh_id', $hocSinhs->pluck('id'))
+                    ->get();
+                    
+                // Đổ dữ liệu vào mảng 2 chiều để dễ hiển thị ra bảng: $diemDaNhap[hoc_sinh_id][loai_diem_id]
+                foreach ($bangDiems as $bd) {
+                    $diemDaNhap[$bd->hoc_sinh_id][$bd->loai_diem_id] = $bd;
+                }
+            }
+        }
+
+        return view('backend.giaovien.diem.danh-sach', compact('phanCongs', 'phanCongActive', 'loaiDiems', 'hocSinhs', 'diemDaNhap'));
     }
 
     public function sua($id)

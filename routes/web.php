@@ -72,12 +72,18 @@ Route::middleware(['auth'])->group(function () {
         // Quản lý điểm
         Route::prefix('diem')->name('diem.')->group(function() {
             Route::get('/nhap', [App\Http\Controllers\GiaoVien\DiemController::class, 'nhapDiem'])->name('nhap');
-            Route::post('/nhap', [App\Http\Controllers\GiaoVien\DiemController::class, 'luuDiem']);
+            
+            // 1. ĐÃ SỬA: Thêm ->name('luu') vào cuối dòng này
+            Route::post('/nhap', [App\Http\Controllers\GiaoVien\DiemController::class, 'luuDiem'])->name('luu');
+            
+            // 2. ĐÃ THÊM: Route để Javascript gọi lấy danh sách học sinh
+            Route::get('/get-hoc-sinh', [App\Http\Controllers\GiaoVien\DiemController::class, 'getHocSinhTheoPhanCong'])->name('get-hoc-sinh');
+            
             Route::get('/danh-sach', [App\Http\Controllers\GiaoVien\DiemController::class, 'danhSach'])->name('danh-sach');
             Route::get('/{id}/sua', [App\Http\Controllers\GiaoVien\DiemController::class, 'sua'])->name('sua');
             Route::put('/{id}', [App\Http\Controllers\GiaoVien\DiemController::class, 'capNhat'])->name('cap-nhat');
             Route::get('/nhap-nhanh', [App\Http\Controllers\GiaoVien\DiemController::class, 'nhapNhanh'])->name('nhap-nhanh');
-    Route::post('/luu-nhap-nhanh', [App\Http\Controllers\GiaoVien\DiemController::class, 'luuNhapNhanh'])->name('luu-nhap-nhanh');
+            Route::post('/luu-nhap-nhanh', [App\Http\Controllers\GiaoVien\DiemController::class, 'luuNhapNhanh'])->name('luu-nhap-nhanh');
         });
         
         // Quản lý tài liệu

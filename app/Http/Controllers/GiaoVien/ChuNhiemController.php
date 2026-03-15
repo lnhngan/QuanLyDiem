@@ -27,25 +27,45 @@ class ChuNhiemController extends Controller
         return view('backend.giaovien.chunhiem.hocsinh', compact('lopChuNhiem', 'hocSinhs'));
     }
 
-    public function diem()
+    public function diem(Request $request)
     {
-        $giaoVien = Auth::user()->giaoVien;
-        $lopChuNhiem = $giaoVien->lopChuNhiems()->first();
+        $giaoVien = \Illuminate\Support\Facades\Auth::user()->giaoVien;
+        
+        // Tìm lớp mà giáo viên này đang làm chủ nhiệm
+        $lopChuNhiem = \App\Models\LopHoc::where('gv_chu_nhiem_id', $giaoVien->id)->first();
         
         if (!$lopChuNhiem) {
-            return redirect()->back()->with('error', 'Bạn không phải giáo viên chủ nhiệm lớp nào');
+            return redirect()->back()->with('error', 'Bạn không phải là giáo viên chủ nhiệm của lớp nào.');
         }
 
-        $hocKyHienTai = AppHelper::getHocKyHienTai();
-        
-        $hocSinhs = HocSinh::where('lop_id', $lopChuNhiem->id)
-            ->with(['bangDiems' => function($query) use ($hocKyHienTai) {
-                $query->where('hoc_ky_id', $hocKyHienTai)
-                    ->with(['monHoc', 'loaiDiem']);
-            }])
-            ->get();
+        // Lấy danh sách học sinh của lớp
+        $hocSinhs = \App\Models\HocSinh::where('lop_id', $lopChuNhiem->id)->orderBy('ho_ten', 'asc')->get();
 
-        return view('backend.giaovien.chunhiem.diem', compact('lopChuNhiem', 'hocSinhs', 'hocKyHienTai'));
+        // Lấy danh sách tất cả môn học và loại điểm
+        $monHocs = \App\Models\MonHoc::orderBy('ten_mon_hoc', 'asc')->get();
+        $loaiDiems = \App\Models\LoaiDiem::orderBy('he_so', 'asc')->get();
+
+        $monHocActive = null;
+        $diemDaNhap = [];
+
+        // Nếu chủ nhiệm chọn 1 môn học từ Dropdown để xem
+        if ($request->has('mon_hoc_id') && $request->mon_hoc_id != '') {
+            $monHocActive = \App\Models\MonHoc::find($request->mon_hoc_id);
+
+            if ($monHocActive) {
+                // Lấy toàn bộ điểm của lớp này, thuộc môn học này
+                $bangDiems = \App\Models\BangDiem::where('mon_hoc_id', $monHocActive->id)
+                    ->whereIn('hoc_sinh_id', $hocSinhs->pluck('id'))
+                    ->get();
+                    
+                // Gắn vào mảng 2 chiều để xuất ra dạng ma trận
+                foreach ($bangDiems as $bd) {
+                    $diemDaNhap[$bd->hoc_sinh_id][$bd->loai_diem_id] = $bd;
+                }
+            }
+        }
+
+        return view('backend.giaovien.chunhiem.diem', compact('lopChuNhiem', 'hocSinhs', 'monHocs', 'loaiDiems', 'monHocActive', 'diemDaNhap'));
     }
     public function thongke()
     {

@@ -1,58 +1,112 @@
 @extends('layouts.backend')
-@section('title', 'Danh sách điểm đã nhập')
+@section('title', 'Tra cứu bảng điểm')
 
 @section('content')
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Lịch sử nhập điểm của tôi</h5>
-        <a href="{{ route('giaovien.diem.nhap') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Nhập điểm mới</a>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-search"></i> Tra cứu Bảng điểm theo môn học</h5>
     </div>
     <div class="card-body">
+        <form action="{{ route('giaovien.diem.danh-sach') }}" method="GET">
+            <div class="row align-items-end">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label fw-bold">Chọn lớp và môn học <span class="text-danger">*</span></label>
+                    <select name="phan_cong_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- Chọn phân công giảng dạy để xem --</option>
+                        @foreach($phanCongs as $pc)
+                            <option value="{{ $pc->id }}" {{ request('phan_cong_id') == $pc->id ? 'selected' : '' }}>
+                                Lớp {{ $pc->lopHoc->ten_lop }} | Môn {{ $pc->monHoc->ten_mon_hoc }} | KHÓA: {{ $pc->hocKy->ten_hoc_ky }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3 text-md-end">
+                    <a href="{{ route('giaovien.diem.nhap-nhanh') }}" class="btn btn-success">
+                        <i class="bi bi-pencil-square"></i> Cập nhật điểm lớp này
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if($phanCongActive)
+<div class="card border-primary shadow">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0 text-uppercase">
+            BẢNG ĐIỂM MÔN {{ $phanCongActive->monHoc->ten_mon_hoc }} - LỚP {{ $phanCongActive->lopHoc->ten_lop }}
+        </h5>
+    </div>
+    <div class="card-body p-0">
         @include('partials.messages')
         
         <div class="table-responsive">
-            <table class="table table-hover table-bordered">
+            <table class="table table-bordered table-hover text-center align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>STT</th>
-                        <th>Học sinh</th>
-                        <th>Lớp</th>
-                        <th>Môn học</th>
-                        <th>Học kỳ</th>
-                        <th>Loại điểm</th>
-                        <th>Điểm số</th>
-                        <th>Thao tác</th>
+                        <th style="width: 5%">STT</th>
+                        <th style="width: 12%">Mã HS</th>
+                        <th class="text-start" style="width: 23%">Họ và tên</th>
+                        
+                        @foreach($loaiDiems as $ld)
+                            <th>
+                                {{ $ld->ten_loai_diem }} <br>
+                                <span class="badge bg-secondary" style="font-size: 0.7rem">HS: {{ $ld->he_so }}</span>
+                            </th>
+                        @endforeach
+                        
+                        <th class="bg-warning-subtle">ĐTB (Dự kiến)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($bangDiems as $key => $diem)
+                    @forelse($hocSinhs as $key => $hs)
                     <tr>
-                        <td>{{ $bangDiems->firstItem() + $key }}</td>
-                        <td class="fw-bold">{{ $diem->hocSinh->ho_ten ?? 'N/A' }}</td>
-                        <td>{{ $diem->hocSinh->lop->ten_lop ?? 'N/A' }}</td>
-                        <td>{{ $diem->monHoc->ten_mon_hoc ?? 'N/A' }}</td>
-                        <td>{{ $diem->hocKy->ten_hoc_ky ?? 'N/A' }}</td>
-                        <td><span class="badge bg-info text-dark">{{ $diem->loaiDiem->ten_loai_diem ?? 'N/A' }}</span></td>
-                        <td>
-                            <strong class="{{ $diem->diem_so < 5 ? 'text-danger' : 'text-success' }}">
-                                {{ number_format($diem->diem_so, 1) }}
-                            </strong>
-                        </td>
-                        <td>
-                            <a href="{{ route('giaovien.diem.sua', $diem->id) }}" class="btn btn-sm btn-warning" title="Sửa điểm"><i class="bi bi-pencil"></i></a>
+                        <td>{{ $key + 1 }}</td>
+                        <td class="fw-bold text-secondary">{{ $hs->ma_hoc_sinh }}</td> 
+                        <td class="text-start fw-bold text-primary">{{ $hs->ho_ten }}</td>
+                        
+                        @php
+                            $tongDiem = 0;
+                            $tongHeSo = 0;
+                        @endphp
+
+                        @foreach($loaiDiems as $ld)
+                            @php
+                                $diem = $diemDaNhap[$hs->id][$ld->id] ?? null;
+                                if ($diem) {
+                                    $tongDiem += $diem->diem_so * $ld->he_so;
+                                    $tongHeSo += $ld->he_so;
+                                }
+                            @endphp
+                            <td>
+                                @if($diem)
+                                    <span class="{{ $diem->diem_so < 5 ? 'text-danger' : 'text-success' }} fw-bold" style="font-size: 1.1rem;">
+                                        {{ number_format($diem->diem_so, 1) }}
+                                    </span>
+                                    <a href="{{ route('giaovien.diem.sua', $diem->id) }}" class="text-warning ms-2" title="Sửa điểm"><i class="bi bi-pencil-fill"></i></a>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                        @endforeach
+                        
+                        <td class="fw-bold bg-warning-subtle text-danger" style="font-size: 1.1rem;">
+                            {{ $tongHeSo > 0 ? number_format($tongDiem / $tongHeSo, 2) : '-' }}
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">Bạn chưa nhập điểm nào.</td>
+                        <td colspan="{{ 4 + $loaiDiems->count() }}" class="text-center py-4">Lớp này hiện chưa có danh sách học sinh.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="mt-3 d-flex justify-content-end">
-            {{ $bangDiems->links() }}
-        </div>
     </div>
 </div>
+@else
+<div class="alert alert-info shadow-sm">
+    <i class="bi bi-info-circle-fill me-2"></i> Vui lòng chọn một Lớp & Môn học ở hộp thoại phía trên để xem bảng điểm chi tiết.
+</div>
+@endif
 @endsection

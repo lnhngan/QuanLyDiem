@@ -37,14 +37,14 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('giaovien.tailieu.them*') ? 'active' : '' }}" 
-                   href="{{ route('giaovien.tailieu.them') }}">
+                   href="{{ route('giaovien.tailieu.create') }}">
                     <i class="bi bi-cloud-upload"></i>
                     Đăng tài liệu
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('giaovien.tailieu.danh-sach*') ? 'active' : '' }}" 
-                   href="{{ route('giaovien.tailieu.danh-sach') }}">
+                   href="{{ route('giaovien.tailieu.index') }}">
                     <i class="bi bi-files"></i>
                     Tài liệu đã đăng
                 </a>
