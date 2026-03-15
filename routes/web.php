@@ -76,6 +76,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/danh-sach', [App\Http\Controllers\GiaoVien\DiemController::class, 'danhSach'])->name('danh-sach');
             Route::get('/{id}/sua', [App\Http\Controllers\GiaoVien\DiemController::class, 'sua'])->name('sua');
             Route::put('/{id}', [App\Http\Controllers\GiaoVien\DiemController::class, 'capNhat'])->name('cap-nhat');
+            Route::get('/nhap-nhanh', [App\Http\Controllers\GiaoVien\DiemController::class, 'nhapNhanh'])->name('nhap-nhanh');
+    Route::post('/luu-nhap-nhanh', [App\Http\Controllers\GiaoVien\DiemController::class, 'luuNhapNhanh'])->name('luu-nhap-nhanh');
         });
         
         // Quản lý tài liệu

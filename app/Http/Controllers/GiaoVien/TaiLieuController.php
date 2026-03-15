@@ -117,4 +117,16 @@ class TaiLieuController extends Controller
         return redirect()->route('giaovien.tailieu.index')
             ->with('success', 'Xóa tài liệu thành công');
     }
+
+    public function show($id)
+    {
+        $giaoVien = Auth::user()->giaoVien;
+        
+        // Dùng where để đảm bảo GV chỉ xem được tài liệu của chính mình
+        $tailieu = TaiLieu::with(['danhMuc', 'monHoc', 'khoiLop'])
+            ->where('giao_vien_id', $giaoVien->id)
+            ->findOrFail($id);
+            
+        return view('backend.giaovien.tailieu.show', compact('tailieu'));
+    }
 }
