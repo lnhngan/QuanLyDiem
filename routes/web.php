@@ -100,19 +100,27 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('hocsinh')->name('hocsinh.')->middleware('role:hocsinh')->group(function() {
         Route::get('/dashboard', [App\Http\Controllers\HocSinh\DashboardController::class, 'index'])->name('dashboard');
         
-        // Xem điểm
-        Route::get('/diem', [App\Http\Controllers\HocSinh\DiemController::class, 'xemDiem'])->name('diem.xem');
-        Route::get('/diem/chi-tiet/{monHocId}', [App\Http\Controllers\HocSinh\DiemController::class, 'chiTiet'])->name('diem.chi-tiet');
+        // 1. Xem điểm (Đã bọc group và thêm Bảng tổng hợp)
+        Route::prefix('diem')->name('diem.')->group(function() {
+            Route::get('/', [App\Http\Controllers\HocSinh\DiemController::class, 'xemDiem'])->name('xem');
+            Route::get('/chi-tiet/{monHocId}', [App\Http\Controllers\HocSinh\DiemController::class, 'chiTiet'])->name('chi-tiet');
+            Route::get('/bang-tong-hop', [App\Http\Controllers\HocSinh\DiemController::class, 'bangTongHop'])->name('bang-tong-hop');
+        });
         
-        // Tài liệu học tập
-        Route::get('/tai-lieu', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'index'])->name('tailieu.xem');
-        Route::get('/tai-lieu/{id}', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'xem'])->name('tailieu.xem-chi-tiet');
-        Route::get('/tai-lieu/{id}/download', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'download'])->name('tailieu.download');
+        // 2. Tài liệu học tập (Đã sửa lại tên chuẩn và thêm Lọc theo môn)
+        Route::prefix('tailieu')->name('tailieu.')->group(function() {
+            Route::get('/', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'index'])->name('index');
+            Route::get('/theo-mon', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'theoMon'])->name('theo-mon');
+            Route::get('/{id}', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'xem'])->name('xem');
+            Route::get('/{id}/download', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'download'])->name('download');
+        });
         
-        // Thông tin
-        Route::get('/thong-tin/ca-nhan', [App\Http\Controllers\HocSinh\ThongTinController::class, 'caNhan'])->name('thongtin.ca-nhan');
-        Route::get('/thong-tin/lop', [App\Http\Controllers\HocSinh\ThongTinController::class, 'lop'])->name('thongtin.lop');
-        Route::get('/thong-tin/giao-vien', [App\Http\Controllers\HocSinh\ThongTinController::class, 'giaoVien'])->name('thongtin.giaovien');
+        // 3. Thông tin (Đã bọc group cho gọn)
+        Route::prefix('thong-tin')->name('thongtin.')->group(function() {
+            Route::get('/ca-nhan', [App\Http\Controllers\HocSinh\ThongTinController::class, 'caNhan'])->name('ca-nhan');
+            Route::get('/lop', [App\Http\Controllers\HocSinh\ThongTinController::class, 'lop'])->name('lop');
+            Route::get('/giao-vien', [App\Http\Controllers\HocSinh\ThongTinController::class, 'giaoVien'])->name('giaovien');
+        });
     });
 });
 
