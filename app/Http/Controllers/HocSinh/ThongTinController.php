@@ -5,42 +5,46 @@ namespace App\Http\Controllers\HocSinh;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\GiaoVien;
+use App\Models\HocSinh;
+use App\Models\LopHoc;
 use App\Models\PhanCongGiangDay;
+use App\Helpers\AppHelper; 
 
 class ThongTinController extends Controller
 {
+    // 1. Thông tin lý lịch cá nhân
     public function caNhan()
     {
         $hocSinh = Auth::user()->hocSinh;
-        
         return view('backend.hocsinh.thongtin.ca-nhan', compact('hocSinh'));
     }
 
+    // 2. Danh sách thành viên lớp
     public function lop()
     {
         $hocSinh = Auth::user()->hocSinh;
-        $lop = $hocSinh->lop()->with(['khoiLop', 'namHoc', 'giaoVienChuNhiem'])->first();
+        $lop = $hocSinh->lop;
         
-        $danhSachLop = $hocSinh->lop->hocSinhs()
-            ->orderBy('ho_ten')
-            ->paginate(20);
-
+        // Lấy danh sách bạn bè cùng lớp
+        $danhSachLop = HocSinh::where('lop_id', $lop->id)
+            ->orderBy('ho_ten', 'asc')
+            ->get();
+            
         return view('backend.hocsinh.thongtin.lop', compact('lop', 'danhSachLop'));
     }
 
+    // 3. Danh sách giáo viên giảng dạy
     public function giaoVien()
     {
         $hocSinh = Auth::user()->hocSinh;
-        $hocKyHienTai = AppHelper::getHocKyHienTai();
+        $lop = $hocSinh->lop;
         
-        // Lấy danh sách giáo viên dạy lớp của học sinh
-        $giaoViens = PhanCongGiangDay::with(['giaoVien', 'monHoc'])
-            ->where('lop_id', $hocSinh->lop_id)
-            ->where('hoc_ky_id', $hocKyHienTai)
-            ->get()
-            ->groupBy('mon_hoc.ten_mon_hoc');
-
-        return view('backend.hocsinh.thongtin.giao-vien', compact('giaoViens'));
+        // Thêm 'hocKy' vào hàm with() để lấy dữ liệu, đồng thời sắp xếp theo Học kỳ
+        $phanCongs = PhanCongGiangDay::with(['monHoc', 'giaoVien', 'hocKy'])
+            ->where('lop_id', $lop->id)
+            ->orderBy('hoc_ky_id', 'asc') // Sắp xếp Học kỳ 1 lên trước, Học kỳ 2 xuống sau
+            ->get();
+            
+        return view('backend.hocsinh.thongtin.giao-vien', compact('lop', 'phanCongs'));
     }
 }

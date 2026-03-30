@@ -27,11 +27,11 @@
                             </tr>
                             <tr>
                                 <th class="text-end text-muted">Giới tính:</th>
-                                <td>
-                                    @if(($hocSinh->gioi_tinh ?? 1) == 1)
-                                        <i class="bi bi-gender-male text-primary"></i> Nam
+                               <td>
+                                    @if(($hocSinh->gioi_tinh ?? 1) == 1 || strtolower(trim($hocSinh->gioi_tinh ?? '')) === 'nam')
+                                        <i class="bi bi-gender-male text-primary"></i> <span class="fw-bold">Nam</span>
                                     @else
-                                        <i class="bi bi-gender-female text-danger"></i> Nữ
+                                        <i class="bi bi-gender-female text-danger"></i> <span class="fw-bold">Nữ</span>
                                     @endif
                                 </td>
                             </tr>

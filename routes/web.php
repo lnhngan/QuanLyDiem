@@ -108,7 +108,7 @@ Route::middleware(['auth'])->group(function () {
         });
         
         // 2. Tài liệu học tập (Đã sửa lại tên chuẩn và thêm Lọc theo môn)
-        Route::prefix('tailieu')->name('tailieu.')->group(function() {
+        Route::prefix('tai-lieu')->name('tailieu.')->group(function() {
             Route::get('/', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'index'])->name('index');
             Route::get('/theo-mon', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'theoMon'])->name('theo-mon');
             Route::get('/{id}', [App\Http\Controllers\HocSinh\TaiLieuController::class, 'xem'])->name('xem');

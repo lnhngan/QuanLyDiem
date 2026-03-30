@@ -12,8 +12,11 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width: 5%">STT</th>
-                        <th class="text-start" style="width: 25%">Môn học phụ trách</th>
-                        <th class="text-start" style="width: 30%">Họ tên Giáo viên</th>
+                        <th class="text-start" style="width: 20%">Môn học phụ trách</th>
+                        <th class="text-start" style="width: 25%">Họ tên Giáo viên</th>
+                        
+                        <th>Học kỳ</th> 
+                        
                         <th>Số điện thoại / Liên hệ</th>
                         <th>Vai trò</th>
                     </tr>
@@ -24,6 +27,13 @@
                         <td>{{ $key + 1 }}</td>
                         <td class="text-start fw-bold text-primary fs-6">{{ $pc->monHoc->ten_mon_hoc ?? 'N/A' }}</td>
                         <td class="text-start fw-bold text-dark fs-6">{{ $pc->giaoVien->ho_ten ?? 'N/A' }}</td>
+                        
+                        <td>
+                            <span class="badge bg-info text-dark shadow-sm px-3 py-2">
+                                {{ $pc->hocKy->ten_hoc_ky ?? 'N/A' }}
+                            </span>
+                        </td>
+                        
                         <td class="fw-bold">{{ $pc->giaoVien->so_dien_thoai ?? 'Đang cập nhật' }}</td>
                         <td>
                             @if(isset($lop->gv_chu_nhiem_id) && $pc->giao_vien_id == $lop->gv_chu_nhiem_id)
@@ -35,7 +45,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted fst-italic">Nhà trường chưa công bố danh sách phân công giảng dạy cho lớp này.</td>
+                        <td colspan="6" class="text-center py-5 text-muted fst-italic">Nhà trường chưa công bố danh sách phân công giảng dạy cho lớp này.</td>
                     </tr>
                     @endforelse
                 </tbody>

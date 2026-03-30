@@ -20,44 +20,59 @@ class TaiLieuController extends Controller
         $query = TaiLieu::with(['danhMuc', 'monHoc', 'giaoVien'])
             ->where('khoi_lop_id', $khoiLopId);
 
-        // Lọc theo môn học
-        if ($request->has('mon_hoc_id') && $request->mon_hoc_id) {
-            $query->where('mon_hoc_id', $request->mon_hoc_id);
-        }
-
-        // Lọc theo danh mục
-        if ($request->has('danh_muc_id') && $request->danh_muc_id) {
-            $query->where('danh_muc_id', $request->danh_muc_id);
-        }
-
         // Tìm kiếm
-        if ($request->has('search') && $request->search) {
+        if ($request->has('search') && $request->search != '') {
             $query->where('tieu_de', 'like', '%' . $request->search . '%');
         }
 
-        $tailieus = $query->latest()->paginate(12);
+        // Chú ý biến $taiLieus (chữ L viết hoa để View nhận diện được)
+        $taiLieus = $query->latest()->paginate(12);
         
-        $danhMucs = DanhMucTaiLieu::all();
-        $monHocs = MonHoc::all();
+        return view('backend.hocsinh.tailieu.index', compact('taiLieus'));
+    }
 
-        return view('backend.hocsinh.tailieu.index', compact('tailieus', 'danhMucs', 'monHocs'));
+    // Hàm lọc tài liệu theo từng môn (dùng cho sidebar lọc)
+    public function theoMon(Request $request)
+    {
+        $hocSinh = Auth::user()->hocSinh;
+        $khoiLopId = $hocSinh->lop->khoi_lop_id;
+
+        // Lấy danh sách các môn học kèm theo số lượng tài liệu
+        $monHocs = MonHoc::withCount(['taiLieus' => function ($q) use ($khoiLopId) {
+            $q->where('khoi_lop_id', $khoiLopId);
+        }])->get();
+
+        $monHocActive = null;
+        $query = TaiLieu::with(['danhMuc', 'monHoc', 'giaoVien'])
+            ->where('khoi_lop_id', $khoiLopId);
+
+        // Nếu bấm chọn 1 môn học cụ thể
+        if ($request->has('mon_hoc_id') && $request->mon_hoc_id != '') {
+            $monHocActive = MonHoc::find($request->mon_hoc_id);
+            $query->where('mon_hoc_id', $request->mon_hoc_id);
+        }
+
+        $taiLieus = $query->latest()->paginate(12);
+
+        return view('backend.hocsinh.tailieu.theo-mon', compact('taiLieus', 'monHocs', 'monHocActive'));
     }
 
     public function xem($id)
     {
-        $tailieu = TaiLieu::with(['danhMuc', 'monHoc', 'giaoVien'])->findOrFail($id);
+        // Chú ý biến $taiLieu (chữ L viết hoa)
+        $taiLieu = TaiLieu::with(['danhMuc', 'monHoc', 'giaoVien'])->findOrFail($id);
         
-        return view('backend.hocsinh.tailieu.xem', compact('tailieu'));
+        return view('backend.hocsinh.tailieu.xem', compact('taiLieu'));
     }
 
     public function download($id)
     {
-        $tailieu = TaiLieu::findOrFail($id);
+        $taiLieu = TaiLieu::findOrFail($id);
         
-        if (!Storage::disk('public')->exists($tailieu->duong_dan_file)) {
-            return redirect()->back()->with('error', 'File không tồn tại');
+        if (!Storage::disk('public')->exists($taiLieu->duong_dan_file)) {
+            return redirect()->back()->with('error', 'File không tồn tại hoặc đã bị xóa.');
         }
 
-        return Storage::disk('public')->download($tailieu->duong_dan_file);
+        return Storage::disk('public')->download($taiLieu->duong_dan_file);
     }
 }

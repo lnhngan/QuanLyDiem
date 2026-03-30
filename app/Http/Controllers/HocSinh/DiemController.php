@@ -7,54 +7,134 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BangDiem;
 use App\Models\MonHoc;
-use App\Helpers\AppHelper;
+use App\Models\HocKy;
+use App\Models\LoaiDiem;
 
 class DiemController extends Controller
 {
-    public function xemDiem()
+    // Trang xem danh sách điểm dạng dọc
+    public function xemDiem(Request $request)
     {
         $hocSinh = Auth::user()->hocSinh;
-        $hocKyHienTai = AppHelper::getHocKyHienTai();
+        $hocKys = HocKy::all();
         
-        // Lấy điểm theo học kỳ
-        $diemTheoKy = BangDiem::where('hoc_sinh_id', $hocSinh->id)
-            ->with(['monHoc', 'hocKy', 'loaiDiem'])
-            ->get()
-            ->groupBy('hoc_ky_id');
+        $query = BangDiem::with(['monHoc', 'hocKy', 'loaiDiem'])
+            ->where('hoc_sinh_id', $hocSinh->id);
 
-        // Tính điểm trung bình từng môn
-        $diemTrungBinh = [];
-        foreach ($diemTheoKy as $hocKyId => $diemList) {
-            $diemTheoMon = $diemList->groupBy('mon_hoc_id');
-            
-            foreach ($diemTheoMon as $monHocId => $diems) {
-                $tongDiem = 0;
-                $tongHeSo = 0;
-                
-                foreach ($diems as $diem) {
-                    $tongDiem += $diem->diem_so * $diem->loaiDiem->he_so;
-                    $tongHeSo += $diem->loaiDiem->he_so;
-                }
-                
-                $diemTrungBinh[$hocKyId][$monHocId] = $tongHeSo > 0 ? round($tongDiem / $tongHeSo, 2) : 0;
-            }
+        if ($request->has('hoc_ky_id') && $request->hoc_ky_id != '') {
+            $query->where('hoc_ky_id', $request->hoc_ky_id);
         }
 
-        return view('backend.hocsinh.diem.xem', compact('diemTheoKy', 'diemTrungBinh', 'hocKyHienTai'));
+        $bangDiems = $query->orderBy('hoc_ky_id', 'desc')->get();
+
+        return view('backend.hocsinh.diem.xem', compact('hocKys', 'bangDiems'));
     }
 
+    // Trang xem điểm chi tiết của 1 môn dạng ma trận ngang
     public function chiTiet($monHocId)
     {
         $hocSinh = Auth::user()->hocSinh;
         $monHoc = MonHoc::findOrFail($monHocId);
+        $loaiDiems = LoaiDiem::orderBy('he_so', 'asc')->get();
         
-        $diemChiTiet = BangDiem::where('hoc_sinh_id', $hocSinh->id)
+        $bangDiems = BangDiem::where('hoc_sinh_id', $hocSinh->id)
             ->where('mon_hoc_id', $monHocId)
-            ->with(['hocKy', 'loaiDiem'])
-            ->orderBy('hoc_ky_id')
-            ->orderBy('loai_diem_id')
+            ->with('loaiDiem')
             ->get();
 
-        return view('backend.hocsinh.diem.chi-tiet', compact('monHoc', 'diemChiTiet'));
+        $diemChiTiet = [];
+        $tongDiem = 0;
+        $tongHeSo = 0;
+
+        // Khởi tạo khung dữ liệu môn học
+        $diemChiTiet[$monHoc->id]['ten_mon'] = $monHoc->ten_mon_hoc;
+        $diemChiTiet[$monHoc->id]['diem'] = [];
+
+        // Đẩy điểm vào đúng loại điểm tương ứng
+        foreach ($bangDiems as $diem) {
+            $diemChiTiet[$monHoc->id]['diem'][$diem->loai_diem_id] = $diem->diem_so;
+            $tongDiem += ($diem->diem_so * $diem->loaiDiem->he_so);
+            $tongHeSo += $diem->loaiDiem->he_so;
+        }
+
+        // Tính trung bình môn
+        $diemChiTiet[$monHoc->id]['dtb'] = $tongHeSo > 0 ? round($tongDiem / $tongHeSo, 2) : 0;
+
+        return view('backend.hocsinh.diem.chi-tiet', compact('monHoc', 'loaiDiems', 'diemChiTiet'));
+    }
+
+    // Trang bảng tổng hợp cả năm
+    public function bangTongHop()
+    {
+        $hocSinh = Auth::user()->hocSinh;
+        
+        if (!$hocSinh || !$hocSinh->lop_id) {
+            return redirect()->back()->with('error', 'Không tìm thấy thông tin lớp học của học sinh.');
+        }
+
+        $monHocs = MonHoc::whereHas('phanCongGiangDays', function($query) use ($hocSinh) {
+            $query->where('lop_id', $hocSinh->lop_id);
+        })->get();
+
+        $tongKetMon = [];
+        $tongDiemCacMon = 0;
+        $soMonCoDiem = 0;
+
+        foreach ($monHocs as $mon) {
+            $bangDiems = BangDiem::with('loaiDiem')
+                ->where('hoc_sinh_id', $hocSinh->id)
+                ->where('mon_hoc_id', $mon->id)
+                ->get();
+
+            $tongDiemHK1 = 0; $heSoHK1 = 0;
+            $tongDiemHK2 = 0; $heSoHK2 = 0;
+
+            foreach ($bangDiems as $diem) {
+                if ($diem->hoc_ky_id == 1) { // Giả định ID HK1 là 1
+                    $tongDiemHK1 += ($diem->diem_so * $diem->loaiDiem->he_so);
+                    $heSoHK1 += $diem->loaiDiem->he_so;
+                } elseif ($diem->hoc_ky_id == 2) { // Giả định ID HK2 là 2
+                    $tongDiemHK2 += ($diem->diem_so * $diem->loaiDiem->he_so);
+                    $heSoHK2 += $diem->loaiDiem->he_so;
+                }
+            }
+
+            $dtbHK1 = $heSoHK1 > 0 ? round($tongDiemHK1 / $heSoHK1, 1) : null;
+            $dtbHK2 = $heSoHK2 > 0 ? round($tongDiemHK2 / $heSoHK2, 1) : null;
+
+            $dtbCaNam = null;
+            if ($dtbHK1 !== null && $dtbHK2 !== null) {
+                $dtbCaNam = round(($dtbHK1 + ($dtbHK2 * 2)) / 3, 1);
+            } elseif ($dtbHK1 !== null) {
+                $dtbCaNam = $dtbHK1;
+            }
+
+            if ($dtbCaNam !== null) {
+                $tongDiemCacMon += $dtbCaNam;
+                $soMonCoDiem++;
+            }
+
+            $tongKetMon[] = [
+                'ten_mon' => $mon->ten_mon_hoc,
+                'hk1' => $dtbHK1 !== null ? number_format($dtbHK1, 1) : '-',
+                'hk2' => $dtbHK2 !== null ? number_format($dtbHK2, 1) : '-',
+                'ca_nam' => $dtbCaNam !== null ? number_format($dtbCaNam, 1) : '-'
+            ];
+        }
+
+        $dtbChung = $soMonCoDiem > 0 ? round($tongDiemCacMon / $soMonCoDiem, 1) : null;
+        $hocLuc = 'Chưa xét';
+        
+        if ($dtbChung !== null) {
+            if ($dtbChung >= 8.0) $hocLuc = 'Giỏi';
+            elseif ($dtbChung >= 6.5) $hocLuc = 'Khá';
+            elseif ($dtbChung >= 5.0) $hocLuc = 'Trung Bình';
+            else $hocLuc = 'Yếu';
+        }
+        
+        $dtbChung = $dtbChung !== null ? number_format($dtbChung, 1) : '-';
+        $hanhKiem = 'Tốt';
+
+        return view('backend.hocsinh.diem.bang-tong-hop', compact('tongKetMon', 'dtbChung', 'hocLuc', 'hanhKiem'));
     }
 }
