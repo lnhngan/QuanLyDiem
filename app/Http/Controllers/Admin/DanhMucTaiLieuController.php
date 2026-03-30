@@ -31,10 +31,11 @@ class DanhMucTaiLieuController extends Controller
             ->with('success', 'Thêm danh mục tài liệu thành công');
     }
 
-    public function edit($id)
+    public function edit(DanhMucTaiLieu $danhMucTaiLieu)
     {
-        $danhmuc = DanhMucTaiLieu::findOrFail($id);
-        return view('backend.admin.danh-muc-tai-lieu.edit', compact('danhmuc'));
+        // Gán lại vào biến $danhMuc để truyền ra View cho khớp
+        $danhMuc = $danhMucTaiLieu;
+        return view('backend.admin.danh-muc-tai-lieu.edit', compact('danhMuc'));
     }
 
     public function update(Request $request, $id)

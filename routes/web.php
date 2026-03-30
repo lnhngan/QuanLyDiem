@@ -19,6 +19,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     
+    
     // Dashboard redirect
     Route::get('/dashboard', function() {
         $user = auth()->user();
@@ -31,6 +32,12 @@ Route::middleware(['auth'])->group(function () {
         }
     })->name('dashboard');
     
+    // --- BỔ SUNG CÁC ROUTE CHO PROFILE VÀ SETTINGS ---
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ProfileController::class, 'index'])->name('index');
+        Route::get('/settings', [\App\Http\Controllers\ProfileController::class, 'settings'])->name('settings');
+        Route::post('/settings/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
+    });
     // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function() {
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');

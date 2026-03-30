@@ -2,59 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Hiển thị trang Hồ sơ (Profile)
      */
-    public function edit(Request $request): View
+    public function index()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
-    }
+        $user = Auth::user();
+        $thongTin = null;
+        $role = '';
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isAdmin()) {
+            $role = 'Admin';
+            // Thêm thông tin riêng cho admin nếu cần
+        } elseif ($user->isGiaoVien()) {
+            $role = 'Giáo viên';
+            $thongTin = $user->giaoVien;
+        } elseif ($user->isHocSinh()) {
+            $role = 'Học sinh';
+            $thongTin = $user->hocSinh;
         }
 
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return view('profile.index', compact('user', 'thongTin', 'role'));
     }
 
     /**
-     * Delete the user's account.
+     * Hiển thị trang Cài đặt (Đổi mật khẩu)
      */
-    public function destroy(Request $request): RedirectResponse
+    public function settings()
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        return view('profile.settings');
+    }
+
+    /**
+     * Xử lý cập nhật mật khẩu
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+            'password.required' => 'Vui lòng nhập mật khẩu mới.',
+            'password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
         ]);
 
-        $user = $request->user();
+        $user = Auth::user();
 
-        Auth::logout();
+        // Kiểm tra mật khẩu hiện tại có đúng không
+        if (!Hash::check($request->current_password, $user->mat_khau)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Mật khẩu hiện tại không đúng.',
+            ]);
+        }
 
-        $user->delete();
+        // Cập nhật mật khẩu mới
+        $user->mat_khau = Hash::make($request->password);
+        $user->save();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->route('profile.settings')->with('success', 'Mật khẩu đã được cập nhật thành công!');
     }
 }
