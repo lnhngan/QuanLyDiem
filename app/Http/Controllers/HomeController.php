@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Hiển thị trang chủ
-     */
     public function index()
     {
         return view('frontend.home');
@@ -22,5 +19,16 @@ class HomeController extends Controller
     public function lienHe()
     {
         return view('frontend.pages.lien-he');
+    }
+
+    public function tinTuc()
+    {
+        // Trong thực tế sẽ query Database bảng TinTuc, ở đây ta load view tĩnh
+        return view('frontend.pages.tin-tuc');
+    }
+
+    public function chiTietTin($id)
+    {
+        return view('frontend.pages.chi-tiet-tin', compact('id'));
     }
 }

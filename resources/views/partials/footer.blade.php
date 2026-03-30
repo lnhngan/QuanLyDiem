@@ -8,15 +8,15 @@
             <div class="col-md-4 mb-4">
                 <h5>Liên kết nhanh</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-white-50 text-decoration-none">Giới thiệu</a></li>
-                    <li><a href="#" class="text-white-50 text-decoration-none">Liên hệ</a></li>
-                    <li><a href="#" class="text-white-50 text-decoration-none">Chính sách bảo mật</a></li>
+                    <li><a href="gioi-thieu" class="text-white-50 text-decoration-none">Giới thiệu</a></li>
+                    <li><a href="lien-he" class="text-white-50 text-decoration-none">Liên hệ</a></li>
+                    
                 </ul>
             </div>
             <div class="col-md-4 mb-4">
                 <h5>Thông tin liên hệ</h5>
                 <ul class="list-unstyled text-white-50">
-                    <li><i class="bi bi-geo-alt me-2"></i>123 Đường ABC, Quận XYZ, TP.HCM</li>
+                    <li><i class="bi bi-geo-alt me-2"></i>Quốc lộ 91, Khóm Bình Long 3, xã Châu Phú, tỉnh An Giang</li>
                     <li><i class="bi bi-telephone me-2"></i>(028) 1234 5678</li>
                     <li><i class="bi bi-envelope me-2"></i>info@nbk.edu.vn</li>
                 </ul>

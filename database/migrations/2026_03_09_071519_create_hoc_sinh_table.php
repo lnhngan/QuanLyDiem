@@ -17,6 +17,8 @@ return new class extends Migration
         $table->string('ma_hoc_sinh')->unique();
         $table->string('ho_ten');
         $table->date('ngay_sinh');
+        $table->tinyInteger('gioi_tinh')->default(1)->comment('1: Nam, 0: Nữ');
+        $table->string('dia_chi')->nullable();
         $table->foreignId('lop_id')->constrained('lop_hoc');
         $table->timestamps();
     });

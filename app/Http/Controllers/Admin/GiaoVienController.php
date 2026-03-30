@@ -8,6 +8,7 @@ use App\Models\GiaoVien;
 use App\Models\TaiKhoan;
 use App\Models\VaiTro;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class GiaoVienController extends Controller
 {
@@ -92,16 +93,35 @@ class GiaoVienController extends Controller
 
     public function destroy($id)
     {
-        $giaovien = GiaoVien::findOrFail($id);
-        
-        // Xóa tài khoản liên quan
-        $giaovien->taiKhoan->delete();
-        
-        // Xóa giáo viên
-        $giaovien->delete();
+        $giaoVien = \App\Models\GiaoVien::findOrFail($id);
+
+        // 1. Kiểm tra: Có đang làm Giáo viên Chủ nhiệm không? (Bắt buộc giữ lại)
+        $lopChuNhiem = \App\Models\LopHoc::where('gv_chu_nhiem_id', $giaoVien->id)->first();
+        if ($lopChuNhiem) {
+            return redirect()->route('admin.giaovien.index')
+                ->with('error', 'Không thể thao tác! Giáo viên này đang làm chủ nhiệm lớp ' . $lopChuNhiem->ten_lop . '. Vui lòng đổi GVCN khác trước.');
+        }
+
+        // 2. Thu hồi toàn bộ lịch Phân công giảng dạy
+        \App\Models\PhanCongGiangDay::where('giao_vien_id', $giaoVien->id)->delete();
+
+        // 3. VÔ HIỆU HÓA TÀI KHOẢN ĐĂNG NHẬP (KHÔNG XÓA)
+        $taiKhoan = \App\Models\TaiKhoan::find($giaoVien->tai_khoan_id);
+        if ($taiKhoan) {
+            // Đổi tên đăng nhập thành chuỗi ngẫu nhiên (ví dụ: disabled_gv001_12345)
+            $taiKhoan->ten_dang_nhap = 'disabled_' . $taiKhoan->ten_dang_nhap . '_' . time();
+            
+            // Xóa sạch mật khẩu bằng một đoạn mã băm rác (Không ai có thể đoán được)
+            $taiKhoan->mat_khau = \Illuminate\Support\Facades\Hash::make(Str::random(40));
+            $taiKhoan->save();
+        }
+
+        // Đánh dấu tên giáo viên để Admin dễ nhận biết trên bảng điểm
+        $giaoVien->ho_ten = '[Đã nghỉ] ' . $giaoVien->ho_ten;
+        $giaoVien->save();
 
         return redirect()->route('admin.giaovien.index')
-            ->with('success', 'Xóa giáo viên thành công');
+            ->with('success', 'Đã vô hiệu hóa tài khoản và thu hồi phân công của giáo viên. Toàn bộ điểm số giáo viên này từng chấm vẫn được giữ nguyên an toàn!');
     }
    public function show($id)
     {

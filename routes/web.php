@@ -8,6 +8,8 @@ use App\Http\Controllers\HomeController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/gioi-thieu', [HomeController::class, 'gioiThieu'])->name('gioi-thieu');
 Route::get('/lien-he', [HomeController::class, 'lienHe'])->name('lien-he');
+Route::get('/tin-tuc', [HomeController::class, 'tinTuc'])->name('tin-tuc');
+Route::get('/tin-tuc/{id}', [HomeController::class, 'chiTietTin'])->name('chi-tiet-tin');
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -121,7 +123,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/lop', [App\Http\Controllers\HocSinh\ThongTinController::class, 'lop'])->name('lop');
             Route::get('/giao-vien', [App\Http\Controllers\HocSinh\ThongTinController::class, 'giaoVien'])->name('giaovien');
         });
-    });
+    });           
 });
 
 

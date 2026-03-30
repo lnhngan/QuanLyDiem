@@ -1,127 +1,66 @@
 @extends('layouts.frontend')
-
-@section('title', 'Trang chủ - THPT Nguyễn Bỉnh Khiêm')
+@section('title', 'Hệ thống Quản lý Học tập')
 
 @section('content')
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold mb-4">Hệ thống quản lý điểm số</h1>
-        <p class="lead mb-4">và cung cấp tài liệu học tập trực tuyến</p>
-        @guest
-            <a href="{{ route('login') }}" class="btn btn-light btn-lg px-5">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập ngay
-            </a>
-        @else
-            <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg px-5">
-                <i class="bi bi-speedometer2 me-2"></i>Vào Dashboard
-            </a>
-        @endguest
-    </div>
-</section>
+<div class="container py-5 mt-4 mb-5">
+    <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <i class="bi bi-mortarboard-fill text-primary" style="font-size: 5rem;"></i>
+            </div>
+            
+            <h1 class="display-5 fw-bold text-dark mb-3">Hệ Thống Quản Lý Giáo Dục</h1>
+            <p class="lead text-muted mb-5 px-md-5">Nền tảng nội bộ hỗ trợ tra cứu điểm số, theo dõi tiến độ học tập và chia sẻ tài liệu. <br> <strong class="text-danger">Dành riêng cho Cán bộ, Giáo viên và Học sinh nhà trường.</strong></p>
 
-<!-- Features Section -->
-<section class="py-5">
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                @auth
+                    @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm fw-bold">Vào Quản trị Admin <i class="bi bi-arrow-right ms-2"></i></a>
+                    @elseif(Auth::user()->isGiaoVien())
+                        <a href="{{ route('giaovien.dashboard') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm fw-bold">Vào Kênh Giáo viên <i class="bi bi-arrow-right ms-2"></i></a>
+                    @elseif(Auth::user()->isHocSinh())
+                        <a href="{{ route('hocsinh.dashboard') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm fw-bold">Vào Kênh Học sinh <i class="bi bi-arrow-right ms-2"></i></a>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm fw-bold">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng Nhập Hệ Thống
+                    </a>
+                    <a href="{{ route('lien-he') }}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill fw-bold">
+                        <i class="bi bi-headset me-2"></i> Hỗ trợ
+                    </a>
+                @endauth
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5">
     <div class="container">
-        <h2 class="text-center mb-5">Tính năng nổi bật</h2>
-        <div class="row g-4">
+        <div class="row text-center g-4 justify-content-center">
             <div class="col-md-4">
-                <div class="card feature-card h-100">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="bi bi-bar-chart fs-1"></i>
-                        </div>
-                        <h5 class="card-title">Quản lý điểm số</h5>
-                        <p class="card-text text-muted">Theo dõi và cập nhật điểm số chính xác, kịp thời theo đúng quy định của Bộ GD&ĐT</p>
-                    </div>
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100 border-top border-primary border-4 hover-shadow transition-all">
+                    <i class="bi bi-shield-lock text-primary fs-1 mb-3"></i>
+                    <h4 class="fw-bold">Bảo mật dữ liệu</h4>
+                    <p class="text-muted mb-0">Mọi thông tin điểm số và lý lịch đều được bảo mật nghiêm ngặt. Chỉ người dùng được cấp tài khoản hợp lệ mới có quyền truy cập.</p>
                 </div>
             </div>
+            
             <div class="col-md-4">
-                <div class="card feature-card h-100">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="bi bi-folder-open fs-1"></i>
-                        </div>
-                        <h5 class="card-title">Tài liệu học tập</h5>
-                        <p class="card-text text-muted">Kho tài liệu phong phú với bài giảng, đề thi, bài tập cho mọi khối lớp</p>
-                    </div>
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100 border-top border-success border-4 hover-shadow transition-all">
+                    <i class="bi bi-journal-check text-success fs-1 mb-3"></i>
+                    <h4 class="fw-bold">Thông tin minh bạch</h4>
+                    <p class="text-muted mb-0">Dữ liệu được cập nhật trực tiếp và liên tục từ hệ thống Giáo viên bộ môn, đảm bảo tính minh bạch, chính xác và kịp thời.</p>
                 </div>
             </div>
+            
             <div class="col-md-4">
-                <div class="card feature-card h-100">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-warning bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="bi bi-people fs-1"></i>
-                        </div>
-                        <h5 class="card-title">Phân quyền thông minh</h5>
-                        <p class="card-text text-muted">Hệ thống phân quyền rõ ràng cho Admin, Giáo viên và Học sinh</p>
-                    </div>
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100 border-top border-info border-4 hover-shadow transition-all">
+                    <i class="bi bi-cloud-arrow-down text-info fs-1 mb-3"></i>
+                    <h4 class="fw-bold">Tài nguyên độc quyền</h4>
+                    <p class="text-muted mb-0">Kho tài liệu, bài giảng và đề thi được lưu trữ tập trung, hỗ trợ học sinh ôn tập mọi lúc mọi nơi ngay trên hệ thống.</p>
                 </div>
             </div>
         </div>
     </div>
-</section>
-
-<!-- Statistics Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-3 col-6 mb-4">
-                <div class="display-4 fw-bold text-primary">1500+</div>
-                <div class="text-muted">Học sinh</div>
-            </div>
-            <div class="col-md-3 col-6 mb-4">
-                <div class="display-4 fw-bold text-success">80+</div>
-                <div class="text-muted">Giáo viên</div>
-            </div>
-            <div class="col-md-3 col-6 mb-4">
-                <div class="display-4 fw-bold text-warning">36</div>
-                <div class="text-muted">Lớp học</div>
-            </div>
-            <div class="col-md-3 col-6 mb-4">
-                <div class="display-4 fw-bold text-info">500+</div>
-                <div class="text-muted">Tài liệu</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- News Section -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Tin tức - Sự kiện</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="News">
-                    <div class="card-body">
-                        <h5 class="card-title">Khai giảng năm học mới 2025-2026</h5>
-                        <p class="card-text text-muted">Lễ khai giảng năm học mới sẽ được tổ chức vào ngày 5/9/2025</p>
-                        <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="News">
-                    <div class="card-body">
-                        <h5 class="card-title">Thi học kỳ 1</h5>
-                        <p class="card-text text-muted">Lịch thi học kỳ 1 dự kiến từ 15/12 đến 25/12/2025</p>
-                        <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="News">
-                    <div class="card-body">
-                        <h5 class="card-title">Hội thảo hướng nghiệp</h5>
-                        <p class="card-text text-muted">Tổ chức hội thảo hướng nghiệp cho học sinh khối 12</p>
-                        <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+</div>
 @endsection

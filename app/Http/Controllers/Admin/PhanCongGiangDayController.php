@@ -105,22 +105,12 @@ class PhanCongGiangDayController extends Controller
     {
         $phanCong = PhanCongGiangDay::findOrFail($id);
         
-        $hasDiem = $phanCong->giaoVien->bangDiems()
-            ->where('mon_hoc_id', $phanCong->mon_hoc_id)
-            ->where('hoc_ky_id', $phanCong->hoc_ky_id)
-            ->exists();
-
-        if ($hasDiem) {
-            return redirect()->route('admin.phan-cong.index')
-                ->with('error', 'Không thể xóa phân công do giáo viên này đã vào điểm.');
-        }
-
+        // Đã loại bỏ phần kiểm tra điểm, cho phép Admin xóa phân công thoải mái
         $phanCong->delete();
 
         return redirect()->route('admin.phan-cong.index')
             ->with('success', 'Xóa phân công giảng dạy thành công!');
     }
-
     public function getByGiaoVien($giaoVienId)
     {
         $phanCongs = PhanCongGiangDay::with(['monHoc', 'lopHoc', 'hocKy'])

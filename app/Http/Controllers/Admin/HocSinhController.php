@@ -95,16 +95,33 @@ class HocSinhController extends Controller
 
     public function destroy($id)
     {
-        $hocsinh = HocSinh::findOrFail($id);
-        
-        // Xóa tài khoản liên quan
-        $hocsinh->taiKhoan->delete();
-        
-        // Xóa học sinh
-        $hocsinh->delete();
+        $hocSinh = \App\Models\HocSinh::findOrFail($id);
 
-        return redirect()->route('admin.hocsinh.index')
-            ->with('success', 'Xóa học sinh thành công');
+        // 1. Tùy chọn an toàn: Kiểm tra xem học sinh đã có điểm chưa?
+        // Nếu trường học của bạn cho phép xóa luôn cả điểm khi xóa học sinh, hãy bỏ ghi chú 2 dòng dưới:
+        // \App\Models\BangDiem::where('hoc_sinh_id', $hocSinh->id)->delete();
+        
+        $diemDaNhap = \App\Models\BangDiem::where('hoc_sinh_id', $hocSinh->id)->first();
+        if ($diemDaNhap) {
+            return redirect()->route('admin.hocsinh.index')
+                ->with('error', 'Không thể xóa! Học sinh này đã có điểm trên hệ thống. Bạn cần phải xóa hết điểm của học sinh này trước.');
+        }
+
+        // 2. Lưu lại ID tài khoản trước khi xóa học sinh
+        $taiKhoanId = $hocSinh->tai_khoan_id;
+        
+        // 3. Xóa học sinh trước (từ ngọn)
+        $hocSinh->delete();
+
+        // 4. Xóa tài khoản đăng nhập sau (tới gốc)
+        if ($taiKhoanId) {
+            $taiKhoan = \App\Models\TaiKhoan::find($taiKhoanId);
+            if ($taiKhoan) {
+                $taiKhoan->delete();
+            }
+        }
+
+        return redirect()->route('admin.hocsinh.index')->with('success', 'Đã xóa thành công học sinh và tài khoản liên kết.');
     }
 
     public function show($id)

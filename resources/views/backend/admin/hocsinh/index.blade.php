@@ -26,7 +26,7 @@
                         <td><span class="badge bg-secondary">{{ $hs->ma_hoc_sinh }}</span></td>
                         <td class="fw-bold">{{ $hs->ho_ten }}</td>
                         <td>{{ \Carbon\Carbon::parse($hs->ngay_sinh)->format('d/m/Y') }}</td>
-                        <td>{{ $hs->lopHoc->ten_lop ?? 'Chưa xếp lớp' }}</td>
+                        <td>{{ $hs->lop->ten_lop ?? 'Chưa xếp lớp' }}</td>
                         <td>
                             @if($hs->taiKhoan && $hs->taiKhoan->trang_thai) 
                                 <span class="badge bg-success">Hoạt động</span>
