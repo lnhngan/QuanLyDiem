@@ -31,7 +31,7 @@
                         </td>
                         <td>{{ isset($hs->ngay_sinh) ? \Carbon\Carbon::parse($hs->ngay_sinh)->format('d/m/Y') : '' }}</td>
                         <td>
-                            @if($hs->gioi_tinh == 1 || strtolower(trim($hs->gioi_tinh)) === 'nam')
+                            @if($hs->gioi_tinh == 0 || strtolower(trim($hs->gioi_tinh)) === 'nam')
                                 <span class="text-primary fw-bold">Nữ</span>
                             @else
                                 <span class="text-danger fw-bold">Nam</span>

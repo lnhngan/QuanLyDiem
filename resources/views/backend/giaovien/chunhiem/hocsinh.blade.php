@@ -18,19 +18,30 @@
                         <th>Ngày sinh</th>
                         <th>Giới tính</th>
                         <th>Địa chỉ</th>
-                        <th>Tài khoản</th>
+                        <th>SĐT Phụ Huynh</th> <th>Tài khoản</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($hocSinhs as $key => $hs)
                     <tr>
-                        <td>{{ $hocSinhs->firstItem() + $key }}</td>
-                        <td><strong>{{ $hs->ma_hs }}</strong></td>
-                        <td>{{ $hs->ho_ten }}</td>
-                        <td>{{ \Carbon\Carbon::parse($hs->ngay_sinh)->format('d/m/Y') }}</td>
-                        <td>{{ $hs->gioi_tinh == 1 ? 'Nam' : 'Nữ' }}</td>
-                        <td>{{ $hs->dia_chi }}</td>
-                        <td>
+                        <td class="align-middle">{{ $hocSinhs->firstItem() + $key }}</td>
+                        <td class="align-middle"><strong>{{ $hs->ma_hoc_sinh ?? $hs->ma_hs }}</strong></td>
+                        <td class="align-middle">{{ $hs->ho_ten }}</td>
+                        <td class="align-middle">{{ $hs->ngay_sinh ? \Carbon\Carbon::parse($hs->ngay_sinh)->format('d/m/Y') : 'N/A' }}</td>
+                        <td class="align-middle">{{ ($hs->gioi_tinh == 1) ? 'Nam' : 'Nữ' }}</td>
+                        <td class="align-middle">{{ $hs->dia_chi }}</td>
+                        
+                        <td class="align-middle">
+                            @if($hs->sdt_phu_huynh)
+                                <a href="tel:{{ $hs->sdt_phu_huynh }}" class="text-info text-decoration-none">
+                                    <i class="bi bi-telephone-fill me-1"></i>{{ $hs->sdt_phu_huynh }}
+                                </a>
+                            @else
+                                <span class="text-muted fst-italic">Chưa có</span>
+                            @endif
+                        </td>
+
+                        <td class="align-middle">
                             @if($hs->taiKhoan)
                                 <span class="badge bg-success">Đã cấp</span>
                             @else
@@ -39,7 +50,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="text-center">Chưa có học sinh nào trong lớp.</td></tr>
+                    <tr><td colspan="8" class="text-center">Chưa có học sinh nào trong lớp.</td></tr>
                     @endforelse
                 </tbody>
             </table>

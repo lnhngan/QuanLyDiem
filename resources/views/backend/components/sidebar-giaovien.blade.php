@@ -28,15 +28,15 @@
                 <a class="nav-link {{ request()->routeIs('giaovien.diem.danh-sach*') ? 'active' : '' }}" 
                    href="{{ route('giaovien.diem.danh-sach') }}">
                     <i class="bi bi-table"></i>
-                    Danh sách điểm
+                    Bảng điểm các lớp
                 </a>
             </li>
             
             <li class="nav-item mt-3">
-                <small class="text-white-50 px-3">QUẢN LÝ TÀI LIỆU</small>
+                <small class="text-white-50 px-3">KHO TÀI LIỆU</small>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('giaovien.tailieu.them*') ? 'active' : '' }}" 
+                <a class="nav-link {{ request()->routeIs('giaovien.tailieu.create') ? 'active' : '' }}" 
                    href="{{ route('giaovien.tailieu.create') }}">
                     <i class="bi bi-cloud-upload"></i>
                     Đăng tài liệu
@@ -50,7 +50,7 @@
                 </a>
             </li>
             
-            @if(auth()->user()->giaoVien->lopChuNhiems->isNotEmpty())
+            @if(auth()->user()->giaoVien && auth()->user()->giaoVien->lopChuNhiems->isNotEmpty())
             <li class="nav-item mt-3">
                 <small class="text-white-50 px-3">CHỦ NHIỆM</small>
             </li>
@@ -59,13 +59,6 @@
                    href="{{ route('giaovien.chunhiem.hocsinh') }}">
                     <i class="bi bi-people"></i>
                     Danh sách lớp
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('giaovien.chunhiem.diem*') ? 'active' : '' }}" 
-                   href="{{ route('giaovien.chunhiem.diem') }}">
-                    <i class="bi bi-graph-up"></i>
-                    Xem điểm lớp
                 </a>
             </li>
             @endif

@@ -39,6 +39,18 @@
                                 <th class="text-end text-muted">Địa chỉ liên hệ:</th>
                                 <td>{{ $hocSinh->dia_chi ?? 'Chưa cập nhật' }}</td>
                             </tr>
+                            
+                            <tr>
+                                <th class="text-end text-muted">SĐT Phụ huynh:</th>
+                                <td>
+                                    @if($hocSinh->sdt_phu_huynh)
+                                        <span class="fw-bold text-info">{{ $hocSinh->sdt_phu_huynh }}</span>
+                                    @else
+                                        <span class="text-muted fst-italic">Chưa cập nhật</span>
+                                    @endif
+                                </td>
+                            </tr>
+
                             <tr>
                                 <td colspan="2"><hr class="my-2"></td>
                             </tr>

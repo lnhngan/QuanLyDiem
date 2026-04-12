@@ -24,38 +24,38 @@ class HocSinhController extends Controller
         return view('backend.admin.hocsinh.create', compact('lophocs'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
-            'ma_hoc_sinh' => 'required|string|unique:hoc_sinh',
+            'ma_hoc_sinh' => 'required|unique:hoc_sinh,ma_hoc_sinh',
             'ho_ten' => 'required|string|max:255',
             'ngay_sinh' => 'required|date',
+            'gioi_tinh' => 'required|in:0,1',
             'lop_id' => 'required|exists:lop_hoc,id',
-            'ten_dang_nhap' => 'required|string|unique:tai_khoan,ten_dang_nhap',
-            'mat_khau' => 'required|string|min:6',
+            'dia_chi' => 'nullable|string|max:255',
+            'sdt_phu_huynh' => 'nullable|string|max:20',
         ]);
 
-        // Tạo tài khoản
-        $vaiTroHocSinh = VaiTro::where('ten_vai_tro', 'Học sinh')->first();
-        
-        $taiKhoan = TaiKhoan::create([
-            'ten_dang_nhap' => $request->ten_dang_nhap,
-            'mat_khau' => Hash::make($request->mat_khau),
-            'vai_tro_id' => $vaiTroHocSinh->id,
-            'trang_thai' => true
+        // 1. Tạo tài khoản trước
+        $taiKhoan = \App\Models\TaiKhoan::create([
+            'ten_dang_nhap' => $request->ma_hoc_sinh,
+            'mat_khau' => \Illuminate\Support\Facades\Hash::make('123456'), // Pass mặc định
+            'vai_tro_id' => 3, // 3 là Role Học Sinh
         ]);
 
-        // Tạo học sinh
-        HocSinh::create([
-            'tai_khoan_id' => $taiKhoan->id,
+        // 2. Tạo Học sinh
+        \App\Models\HocSinh::create([
             'ma_hoc_sinh' => $request->ma_hoc_sinh,
             'ho_ten' => $request->ho_ten,
             'ngay_sinh' => $request->ngay_sinh,
+            'gioi_tinh' => $request->gioi_tinh,
+            'dia_chi' => $request->dia_chi,
+            'sdt_phu_huynh' => $request->sdt_phu_huynh,
             'lop_id' => $request->lop_id,
+            'tai_khoan_id' => $taiKhoan->id,
         ]);
 
-        return redirect()->route('admin.hocsinh.index')
-            ->with('success', 'Thêm học sinh thành công');
+        return redirect()->route('admin.hocsinh.index')->with('success', 'Thêm học sinh thành công!');
     }
 
     public function edit($id)
@@ -73,7 +73,10 @@ class HocSinhController extends Controller
             'ma_hoc_sinh' => 'required|string|unique:hoc_sinh,ma_hoc_sinh,' . $id,
             'ho_ten' => 'required|string|max:255',
             'ngay_sinh' => 'required|date',
+            'gioi_tinh' => 'required|in:0,1',
             'lop_id' => 'required|exists:lop_hoc,id',
+            'dia_chi' => 'nullable|string|max:255',
+            'sdt_phu_huynh' => 'nullable|string|max:20',
             'trang_thai' => 'boolean'
         ]);
 
@@ -81,13 +84,26 @@ class HocSinhController extends Controller
             'ma_hoc_sinh' => $request->ma_hoc_sinh,
             'ho_ten' => $request->ho_ten,
             'ngay_sinh' => $request->ngay_sinh,
+            'gioi_tinh' => $request->gioi_tinh,
+            'dia_chi' => $request->dia_chi,
+            'sdt_phu_huynh' => $request->sdt_phu_huynh,
             'lop_id' => $request->lop_id,
         ]);
 
-        // Cập nhật trạng thái tài khoản
-        $hocsinh->taiKhoan->update([
-            'trang_thai' => $request->trang_thai ?? true
-        ]);
+        // Cập nhật trạng thái tài khoản và đổi tên đăng nhập nếu mã HS thay đổi
+        if ($hocsinh->taiKhoan) {
+            $hocsinh->taiKhoan->update([
+                'ten_dang_nhap' => $request->ma_hoc_sinh,
+                'trang_thai' => $request->trang_thai ?? true
+            ]);
+            
+            // Nếu có nhập mật khẩu mới thì đổi mật khẩu
+            if ($request->filled('mat_khau')) {
+                $hocsinh->taiKhoan->update([
+                    'mat_khau' => \Illuminate\Support\Facades\Hash::make($request->mat_khau)
+                ]);
+            }
+        }
 
         return redirect()->route('admin.hocsinh.index')
             ->with('success', 'Cập nhật học sinh thành công');
@@ -96,10 +112,6 @@ class HocSinhController extends Controller
     public function destroy($id)
     {
         $hocSinh = \App\Models\HocSinh::findOrFail($id);
-
-        // 1. Tùy chọn an toàn: Kiểm tra xem học sinh đã có điểm chưa?
-        // Nếu trường học của bạn cho phép xóa luôn cả điểm khi xóa học sinh, hãy bỏ ghi chú 2 dòng dưới:
-        // \App\Models\BangDiem::where('hoc_sinh_id', $hocSinh->id)->delete();
         
         $diemDaNhap = \App\Models\BangDiem::where('hoc_sinh_id', $hocSinh->id)->first();
         if ($diemDaNhap) {
@@ -126,7 +138,6 @@ class HocSinhController extends Controller
 
     public function show($id)
     {
-        // Tìm học sinh theo ID, lấy kèm các bảng liên kết để tránh lỗi N+1 query
         $hocsinh = \App\Models\HocSinh::with([
             'taiKhoan', 
             'lop', 

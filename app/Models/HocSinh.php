@@ -11,11 +11,14 @@ class HocSinh extends Model
 
     protected $table = 'hoc_sinh';
     protected $fillable = [
-        'tai_khoan_id', 
-        'ma_hoc_sinh', 
-        'ho_ten', 
-        'ngay_sinh', 
-        'lop_id'
+        'ma_hoc_sinh',
+        'ho_ten',
+        'ngay_sinh',
+        'gioi_tinh',
+        'dia_chi',
+        'sdt_phu_huynh', 
+        'lop_id',
+        'tai_khoan_id'
     ];
 
     protected $casts = [

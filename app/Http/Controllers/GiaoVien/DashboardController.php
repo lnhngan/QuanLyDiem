@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\GiaoVien;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\PhanCongGiangDay;
+use App\Models\TaiLieu;
+use App\Models\LopHoc;
 
 class DashboardController extends Controller
 {
@@ -11,20 +15,28 @@ class DashboardController extends Controller
     {
         $giaoVien = Auth::user()->giaoVien;
         
-        if (!$giaoVien) {
-            return redirect()->route('login')->with('error', 'Không tìm thấy thông tin giáo viên');
-        }
+        // Thống kê số lớp giảng dạy
+        $soLopGiangDay = PhanCongGiangDay::where('giao_vien_id', $giaoVien->id)
+            ->distinct('lop_id')
+            ->count('lop_id');
+            
+        // Thống kê tài liệu đã đăng
+        $soTaiLieu = TaiLieu::where('giao_vien_id', $giaoVien->id)->count();
         
-        $data = [
-            'giaoVien' => $giaoVien,
-            'lop_days' => $giaoVien->lopDays()->with(['khoiLop', 'namHoc'])->get(),
-            'mon_days' => $giaoVien->monDays,
-            'lop_chu_nhiem' => $giaoVien->lopChuNhiems()->with(['hocSinhs'])->first(),
-            'so_luong_hoc_sinh' => $giaoVien->lopDays->sum(function($lop) {
-                return $lop->hocSinhs->count();
-            }),
-        ];
+        // Xem có phải là giáo viên chủ nhiệm không
+        $lopChuNhiem = LopHoc::where('gv_chu_nhiem_id', $giaoVien->id)->first();
         
-        return view('backend.dashboard.giaovien', $data);
+        // Lấy danh sách các lớp đang dạy để hiển thị
+        $danhSachLopDay = PhanCongGiangDay::with(['lopHoc', 'monHoc'])
+            ->where('giao_vien_id', $giaoVien->id)
+            ->get();
+
+        return view('backend.dashboard.giaovien', compact(
+            'giaoVien', 
+            'soLopGiangDay', 
+            'soTaiLieu', 
+            'lopChuNhiem', 
+            'danhSachLopDay'
+        ));
     }
 }
