@@ -61,6 +61,13 @@
                     Danh sách lớp
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('giaovien.chunhiem.thongke*') ? 'active' : '' }}" 
+                   href="{{ route('giaovien.chunhiem.thongke') }}">
+                    <i class="bi bi-pie-chart"></i>
+                    Thống kê Xếp loại
+                </a>
+            </li>
             @endif
         </ul>
     </div>

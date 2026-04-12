@@ -102,6 +102,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('chunhiem')->name('chunhiem.')->group(function() {
             Route::get('/hocsinh', [App\Http\Controllers\GiaoVien\ChuNhiemController::class, 'hocSinh'])->name('hocsinh');
             Route::get('/diem', [App\Http\Controllers\GiaoVien\ChuNhiemController::class, 'diem'])->name('diem');
+            Route::get('/thong-ke', [App\Http\Controllers\GiaoVien\ChuNhiemController::class, 'thongKe'])->name('thongke');
         });
     });
     

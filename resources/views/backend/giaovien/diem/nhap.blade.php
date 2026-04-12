@@ -21,7 +21,7 @@
                     <select class="form-select" name="phan_cong_id" id="phan_cong_id" required>
                         <option value="">-- Chọn phân công giảng dạy --</option>
                         @foreach($phanCongs as $pc)
-                            <option value="{{ $pc->id }}">Lớp {{ $pc->lopHoc->ten_lop }} - {{ $pc->monHoc->ten_mon_hoc }}</option>
+                            <option value="{{ $pc->id }}">Lớp {{ $pc->lopHoc->ten_lop }} - {{ $pc->monHoc->ten_mon_hoc }} - {{ $pc->hocKy->ten_hoc_ky }}</option>
                         @endforeach
                     </select>
                 </div>

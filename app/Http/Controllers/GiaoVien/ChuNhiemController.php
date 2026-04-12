@@ -67,53 +67,94 @@ class ChuNhiemController extends Controller
 
         return view('backend.giaovien.chunhiem.diem', compact('lopChuNhiem', 'hocSinhs', 'monHocs', 'loaiDiems', 'monHocActive', 'diemDaNhap'));
     }
-    public function thongke()
+    // ĐÃ THAY THẾ HÀM THỐNG KÊ BẰNG CODE BẠN CUNG CẤP
+    public function thongKe()
     {
-        $giaoVien = Auth::user()->giaoVien;
-        $lopChuNhiem = $giaoVien->lopChuNhiems()->first();
-        
+        $giaoVienId = Auth::user()->giaoVien->id;
+        $lopChuNhiem = \App\Models\LopHoc::where('gv_chu_nhiem_id', $giaoVienId)->first();
+
         if (!$lopChuNhiem) {
-            return redirect()->back()->with('error', 'Bạn không phải giáo viên chủ nhiệm lớp nào');
+            return redirect()->route('giaovien.dashboard')->with('error', 'Bạn không phải là giáo viên chủ nhiệm.');
         }
 
-        $hocKyHienTai = AppHelper::getHocKyHienTai();
-        // Xử lý an toàn nếu hàm getHocKyHienTai chưa hoàn thiện
-        if(!$hocKyHienTai) {
-            $hocKyHienTai = \App\Models\HocKy::latest('id')->first()->id ?? 1;
-        }
+        $danhSachHocSinh = \App\Models\HocSinh::where('lop_id', $lopChuNhiem->id)->get();
 
-        $hocSinhs = HocSinh::where('lop_id', $lopChuNhiem->id)->get();
-        
-        $thongKe = ['gioi' => 0, 'kha' => 0, 'tb' => 0, 'yeu' => 0];
+        // Khởi tạo mảng đếm số lượng học sinh theo từng loại học lực
+        $thongKe = [
+            'Gioi' => 0,
+            'Kha' => 0,
+            'TrungBinh' => 0,
+            'Yeu' => 0,
+            'ChuaXepLoai' => 0
+        ];
 
-        foreach ($hocSinhs as $hs) {
-            // Lấy tất cả điểm của học sinh này trong học kỳ
-            $diems = BangDiem::with('loaiDiem')
-                ->where('hoc_sinh_id', $hs->id)
-                ->where('hoc_ky_id', $hocKyHienTai)
-                ->get();
-            
-            $tongDiem = 0;
-            $tongHeSo = 0;
-            
-            // Áp dụng công thức tính ĐTB: Tổng (Điểm * Hệ số) / Tổng hệ số
-            foreach ($diems as $diem) {
-                $heSo = $diem->loaiDiem->he_so;
-                $tongDiem += ($diem->diem_so * $heSo);
-                $tongHeSo += $heSo;
+        $hocSinhCoDiem = [];
+
+        foreach ($danhSachHocSinh as $hocSinh) {
+            $bangDiem = \App\Models\BangDiem::where('hoc_sinh_id', $hocSinh->id)->get();
+
+            // Nhóm điểm theo học kỳ và môn học
+            $diemTheoHocKy = [];
+            foreach ($bangDiem as $diem) {
+                $diemTheoHocKy[$diem->hoc_ky_id][$diem->mon_hoc_id][$diem->loai_diem_id][] = $diem->diem_so;
             }
-            
-            $hs->dtb = $tongHeSo > 0 ? round($tongDiem / $tongHeSo, 2) : null;
 
-            // Xếp loại cơ bản theo chuẩn
-            if ($hs->dtb !== null) {
-                if ($hs->dtb >= 8.0) $thongKe['gioi']++;
-                elseif ($hs->dtb >= 6.5) $thongKe['kha']++;
-                elseif ($hs->dtb >= 5.0) $thongKe['tb']++;
-                else $thongKe['yeu']++;
+            $dtbMonTheoHocKy = [];
+            foreach ($diemTheoHocKy as $hkId => $diemCacMon) {
+                foreach ($diemCacMon as $monId => $diemLoai) {
+                    $tongDiem = 0; $tongHeSo = 0;
+                    
+                    // Logic tính điểm: Thường xuyên (id 1, 2) hệ số 1, Giữa kỳ (id 3) hệ số 2, Cuối kỳ (id 4) hệ số 3
+                    if(isset($diemLoai[1])) { foreach($diemLoai[1] as $d) { $tongDiem += $d; $tongHeSo += 1; } }
+                    if(isset($diemLoai[2])) { foreach($diemLoai[2] as $d) { $tongDiem += $d; $tongHeSo += 1; } }
+                    if(isset($diemLoai[3])) { $tongDiem += $diemLoai[3][0] * 2; $tongHeSo += 2; }
+                    if(isset($diemLoai[4])) { $tongDiem += $diemLoai[4][0] * 3; $tongHeSo += 3; }
+
+                    if ($tongHeSo > 0) $dtbMonTheoHocKy[$hkId][$monId] = round($tongDiem / $tongHeSo, 1);
+                }
             }
+
+            // Tính ĐTB từng học kỳ (Giả định HK1 có id=1, HK2 có id=2)
+            $dtbHk1 = 0; $dtbHk2 = 0;
+            if (isset($dtbMonTheoHocKy[1]) && count($dtbMonTheoHocKy[1]) > 0) {
+                $dtbHk1 = round(array_sum($dtbMonTheoHocKy[1]) / count($dtbMonTheoHocKy[1]), 1);
+            }
+            if (isset($dtbMonTheoHocKy[2]) && count($dtbMonTheoHocKy[2]) > 0) {
+                $dtbHk2 = round(array_sum($dtbMonTheoHocKy[2]) / count($dtbMonTheoHocKy[2]), 1);
+            }
+
+            // Tính ĐTB Cả năm: (HK1 + HK2 * 2) / 3
+            $dtbCaNam = 0;
+            if ($dtbHk1 > 0 && $dtbHk2 > 0) {
+                $dtbCaNam = round(($dtbHk1 + ($dtbHk2 * 2)) / 3, 1);
+            }
+
+            // Xếp loại học lực dựa trên ĐTB Cả năm
+            $xepLoai = 'Chưa xếp loại';
+            if ($dtbCaNam > 0) {
+                if ($dtbCaNam >= 8.0) { $xepLoai = 'Giỏi'; $thongKe['Gioi']++; }
+                elseif ($dtbCaNam >= 6.5) { $xepLoai = 'Khá'; $thongKe['Kha']++; }
+                elseif ($dtbCaNam >= 5.0) { $xepLoai = 'Trung Bình'; $thongKe['TrungBinh']++; }
+                else { $xepLoai = 'Yếu'; $thongKe['Yeu']++; }
+            } else {
+                $thongKe['ChuaXepLoai']++;
+            }
+
+            // Gắn thông tin tính toán được vào đối tượng học sinh
+            $hocSinh->dtbCaNam = $dtbCaNam;
+            $hocSinh->xepLoai = $xepLoai;
+            $hocSinhCoDiem[] = $hocSinh;
         }
 
-        return view('backend.giaovien.chunhiem.thongke', compact('lopChuNhiem', 'hocSinhs', 'thongKe', 'hocKyHienTai'));
+        $tongSoHocSinh = count($danhSachHocSinh);
+
+        // Sắp xếp danh sách học sinh giảm dần theo ĐTB
+        usort($hocSinhCoDiem, function($a, $b) {
+            return $b->dtbCaNam <=> $a->dtbCaNam;
+        });
+
+        return view('backend.giaovien.chunhiem.thongke', compact('lopChuNhiem', 'thongKe', 'tongSoHocSinh', 'hocSinhCoDiem'));
     }
 }
+
+    
