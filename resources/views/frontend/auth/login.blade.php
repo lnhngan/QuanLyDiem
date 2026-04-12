@@ -59,14 +59,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="card-footer bg-light text-center py-3">
-                    <div class="small">
-                        <p class="mb-1">Tài khoản demo:</p>
-                        <span class="badge bg-secondary me-1">Admin: admin / 123456</span>
-                        <span class="badge bg-secondary me-1">GV: GV001 / 123456</span>
-                        <span class="badge bg-secondary">HS: HS001 / 123456</span>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>

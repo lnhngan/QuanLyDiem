@@ -2,30 +2,37 @@
 @section('title', 'Giới thiệu về nhà trường')
 
 @section('content')
-<div class="container py-5 my-3">
-    <div class="row align-items-center mb-5">
-        <div class="col-md-6 pe-md-5">
-            <h1 class="fw-bold text-primary mb-4">Về Chúng Tôi</h1>
-            <p class="lead text-dark" style="text-align: justify;">Trường THPT Mẫu tự hào là một trong những lá cờ đầu trong ngành giáo dục, chuyên đào tạo và bồi dưỡng những thế hệ học sinh tài năng, phát triển toàn diện.</p>
-            <p class="text-muted" style="text-align: justify;">Được thành lập từ năm 2000, trường đã có hơn 20 năm kinh nghiệm. Với đội ngũ giáo viên tận tâm, trình độ chuyên môn cao cùng cơ sở vật chất hiện đại, chúng tôi cam kết mang lại một môi trường học tập an toàn, thân thiện và sáng tạo.</p>
+<div class="container py-5 my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 text-center">
             
-            <div class="row mt-4 text-center">
-                <div class="col-4">
-                    <h2 class="text-success fw-bold">20+</h2>
-                    <small class="text-muted">Năm lịch sử</small>
+            <h1 class="display-4 fw-bold text-primary mb-4">Về Chúng Tôi</h1>
+            
+            <p class="lead text-dark mb-4" style="font-size: 1.25rem;">
+                Trường THPT Nguyễn Bỉnh Khiêm tự hào là một trong những lá cờ đầu trong ngành giáo dục, chuyên đào tạo và bồi dưỡng những thế hệ học sinh tài năng, phát triển toàn diện.
+            </p>
+            
+            <p class="text-muted mb-5" style="font-size: 1.1rem; line-height: 1.8;">
+               Được thành lập vào ngày 05/06/1997 theo Quyết định số 2836/QĐ-UB-NC, trường THPT Nguyễn Bỉnh Khiêm đã trải qua gần 30 năm hình thành và phát triển, khẳng định vị thế là một trong những cơ sở giáo dục uy tín và chất lượng. Tự hào mang tên vị danh nhân văn hóa – biểu tượng cho trí tuệ, nhân cách và tầm nhìn vượt thời đại – nhà trường luôn lấy tư tưởng của Người làm kim chỉ nam, không ngừng nhắc nhở các thế hệ thầy và trò hướng tới sự hoàn thiện về cả tri thức lẫn lòng nhân ái.
+
+Với sứ mệnh “Đào tạo thế hệ học sinh toàn diện – Giỏi ngoại ngữ, vững kỹ năng, tự tin bước ra thế giới”, chúng tôi cam kết xây dựng một môi trường giáo dục năng động và sáng tạo. Tại đây, mỗi học sinh không chỉ được trang bị nền tảng học vấn vững chắc mà còn được rèn luyện bản lĩnh để trở thành những công dân toàn cầu, sẵn sàng hội nhập và chinh phục mọi thử thách trong tương lai.
+            </p>
+            
+            <div class="row mt-5 justify-content-center">
+                <div class="col-sm-4 mb-4">
+                    <h2 class="display-5 text-success fw-bold">20+</h2>
+                    <p class="text-uppercase fw-semibold text-muted">Năm lịch sử</p>
                 </div>
-                <div class="col-4">
-                    <h2 class="text-info fw-bold">50+</h2>
-                    <small class="text-muted">Giáo viên giỏi</small>
+                <div class="col-sm-4 mb-4">
+                    <h2 class="display-5 text-info fw-bold">50+</h2>
+                    <p class="text-uppercase fw-semibold text-muted">Giáo viên giỏi</p>
                 </div>
-                <div class="col-4">
-                    <h2 class="text-warning fw-bold">5k+</h2>
-                    <small class="text-muted">Học sinh tốt nghiệp</small>
+                <div class="col-sm-4 mb-4">
+                    <h2 class="display-5 text-warning fw-bold">5k+</h2>
+                    <p class="text-uppercase fw-semibold text-muted">Học sinh tốt nghiệp</p>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6 mt-4 mt-md-0">
-            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=800&auto=format&fit=crop" alt="Giới thiệu trường" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; height: 450px;">
+
         </div>
     </div>
 </div>
