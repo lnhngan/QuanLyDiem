@@ -122,19 +122,22 @@ class DiemController extends Controller
             ];
         }
 
-        $dtbChung = $soMonCoDiem > 0 ? round($tongDiemCacMon / $soMonCoDiem, 1) : null;
-        $hocLuc = 'Chưa xét';
+        // 1. Tạo biến số thực diemTrungBinhNam để gửi cho View tính toán logic giao diện
+        $diemTrungBinhNam = $soMonCoDiem > 0 ? round($tongDiemCacMon / $soMonCoDiem, 1) : 0;
         
-        if ($dtbChung !== null) {
-            if ($dtbChung >= 8.0) $hocLuc = 'Giỏi';
-            elseif ($dtbChung >= 6.5) $hocLuc = 'Khá';
-            elseif ($dtbChung >= 5.0) $hocLuc = 'Trung Bình';
+        $hocLuc = 'Chưa xét';
+        if ($diemTrungBinhNam > 0) {
+            if ($diemTrungBinhNam >= 8.0) $hocLuc = 'Giỏi';
+            elseif ($diemTrungBinhNam >= 6.5) $hocLuc = 'Khá';
+            elseif ($diemTrungBinhNam >= 5.0) $hocLuc = 'Trung Bình';
             else $hocLuc = 'Yếu';
         }
         
-        $dtbChung = $dtbChung !== null ? number_format($dtbChung, 1) : '-';
+        // 2. Tạo chuỗi dtbChung để hiển thị đẹp mắt (Có format dạng 8.0 hoặc dấu - nếu chưa có điểm)
+        $dtbChung = $diemTrungBinhNam > 0 ? number_format($diemTrungBinhNam, 1) : '-';
         $hanhKiem = 'Tốt';
 
-        return view('backend.hocsinh.diem.bang-tong-hop', compact('tongKetMon', 'dtbChung', 'hocLuc', 'hanhKiem'));
+        // 3. Thêm diemTrungBinhNam vào mảng compact() để gửi sang View
+        return view('backend.hocsinh.diem.bang-tong-hop', compact('tongKetMon', 'dtbChung', 'hocLuc', 'hanhKiem', 'diemTrungBinhNam'));
     }
 }

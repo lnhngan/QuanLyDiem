@@ -7,6 +7,7 @@
         <h5 class="mb-0">Danh sách học sinh</h5>
         <a href="{{ route('admin.hocsinh.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Thêm mới</a>
     </div>
+    
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover datatable">
